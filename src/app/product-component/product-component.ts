@@ -9,7 +9,6 @@ import { ActivatedRoute } from '@angular/router';
   templateUrl: './product-component.html'
 })
 export class ProductComponent implements OnInit {
-  // Flag di visibilità condizionale
   hasBatch = false;
   hasBestBefore = false;
 
@@ -30,10 +29,12 @@ export class ProductComponent implements OnInit {
     netWeight: '250',
     targetMarkets: ['IT', 'SM'],
     ingredients: 'Fragole, Zucchero, Succo di limone concentrato, Gelificante: Pectina di frutta.',
-    fruitContent: '55g per 100g di prodotto',
-    sugarContent: '60g per 100g di prodotto',
+    fruitContent: '55g per 100g',
+    fruitPercentage: 55, // Valore per la barra dell'infografica
+    sugarContent: '60g per 100g',
+    sugarPercentage: 60, // Valore per la barra dell'infografica
     allergens: ['Assenti. Prodotto in uno stabilimento che utilizza frutta a guscio.'],
-    storageInstructions: "Conservare in luogo fresco e asciutto. Dopo l'apertura conservare in frigorifero a +4°C e consumare entro 14 giorni.",
+    storageInstructions: "Conservare in luogo fresco e asciutto. Dopo l'apertura in frigorifero a +4°C e consumare entro 14 giorni.",
     packaging: [
       { type: 'Vaso', material: 'Vetro', code: 'GL 70', recycling: 'Vetro', icon: '🫙' },
       { type: 'Capsula', material: 'Acciaio', code: 'FE 40', recycling: 'Metalli', icon: '🥫' }
@@ -61,12 +62,10 @@ export class ProductComponent implements OnInit {
       const scannedBatch = params.get('batch');
       const scannedBestBefore = params.get('bestBefore');
 
-      // Assegnazione dati dinamici dall'URL
       this.product.gtin = scannedGtin || '08032089000147';
       this.product.batch = scannedBatch || '';
       this.product.bestBefore = scannedBestBefore || '';
 
-      // Attivazione condizionale delle sezioni
       this.hasBatch = !!scannedBatch;
       this.hasBestBefore = !!scannedBestBefore;
 
@@ -75,16 +74,10 @@ export class ProductComponent implements OnInit {
   }
 
   private injectJsonLd(): void {
-    // 1. Costruiamo l'ID canonico dinamico in base ai dati presenti nell'URL
     let canonicalId = `https://id.gs1.org/01/${this.product.gtin}`;
-    if (this.hasBatch) {
-      canonicalId += `/10/${this.product.batch}`;
-    }
-    if (this.hasBestBefore) {
-      canonicalId += `/17/${this.product.bestBefore}`;
-    }
+    if (this.hasBatch) canonicalId += `/10/${this.product.batch}`;
+    if (this.hasBestBefore) canonicalId += `/17/${this.product.bestBefore}`;
 
-    // 2. Costruiamo il bizz-tree del JSON-LD base
     const jsonLd: any = {
       '@context': ['https://schema.org/', { gs1: 'https://gs1.org/voc/' }],
       '@id': canonicalId,
@@ -101,7 +94,7 @@ export class ProductComponent implements OnInit {
         'schema:value': this.product.netWeight,
         'schema:unitCode': 'GRM',
       },
-      'gs1:ingredientStatement': `${this.product.ingredients} Frutta utilizzata: ${this.product.fruitContent}. Zuccheri totali: ${this.product.sugarContent}.`,
+      'gs1:ingredientStatement': `${this.product.ingredients} Frutta: ${this.product.fruitContent}. Zuccheri: ${this.product.sugarContent}.`,
       'gs1:consumerStorageInstructions': this.product.storageInstructions,
       'gs1:allergenInfo': {
         '@type': 'gs1:AllergenDetails',
@@ -121,13 +114,6 @@ export class ProductComponent implements OnInit {
           'gs1:packagingRecyclingProcessType': 'Metal recycling'
         }
       ],
-      'schema:offers': {
-        '@type': 'schema:Offer',
-        'schema:price': this.product.price,
-        'schema:priceCurrency': this.product.currency,
-        'schema:availability': `https://schema.org/${this.product.stockStatus}`,
-        'schema:url': 'https://gs1it.org/shop/marmellata-fragole'
-      },
       'gs1:brandOwner': {
         '@type': 'gs1:Organization',
         'gs1:organizationName': this.product.brandOwner.name,
@@ -146,19 +132,11 @@ export class ProductComponent implements OnInit {
       }
     };
 
-    // 3. Arricchiamo il JSON-LD a seconda delle chiavi presenti nell'URL
-    if (this.hasBatch) {
-      jsonLd['gs1:batchLotNumber'] = this.product.batch;
-    }
-    if (this.hasBestBefore) {
-      jsonLd['gs1:bestBeforeDate'] = this.product.bestBefore;
-    }
+    if (this.hasBatch) jsonLd['gs1:batchLotNumber'] = this.product.batch;
+    if (this.hasBestBefore) jsonLd['gs1:bestBeforeDate'] = this.product.bestBefore;
 
-    // Rimozione vecchi script per evitare duplicati al cambio rotta
     const existingScript = this.document.head.querySelector('script[type="application/ld+json"]');
-    if (existingScript) {
-      this.renderer.removeChild(this.document.head, existingScript);
-    }
+    if (existingScript) this.renderer.removeChild(this.document.head, existingScript);
 
     const script = this.renderer.createElement('script');
     script.type = 'application/ld+json';
