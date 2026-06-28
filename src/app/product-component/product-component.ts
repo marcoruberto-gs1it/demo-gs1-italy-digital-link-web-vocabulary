@@ -12,33 +12,50 @@ export class ProductComponent implements OnInit {
   hasBatch = false;
   hasBestBefore = false;
 
+  // Dati prodotto aggiornati secondo le tue specifiche e combinati con dati realistici
   product = {
-    nameIT: 'Marmellata di fragole Extra',
-    nameEN: 'Extra Strawberry Jam',
+    nameIT: 'Marmellata di fragole',
+    nameEN: 'Strawberry jam',
     gtin: '', 
     batch: '',
     bestBefore: '',
-    imageUrl: 'https://demo.gs1it.org/gtin/08032089000147/front.png',
-    price: '3.90',
-    oldPrice: '4.50',
+    imageUrl: 'https://demo.gs1it.org/gtin/08032089000147/front.png', 
+    price: '2.89',
+    oldPrice: '3.50',
     currency: 'EUR',
     stockStatus: 'InStock',
-    stockDisplay: 'Disponibile - Spedizione in 24h',
-    gpcCategory: '10000217 (Marmellate/Confetture)',
+    stockDisplay: 'Disponibile',
+    gpcCategory: '10000217 Marmellate/Confetture (Ambiente)',
     gpcCode: '10000217',
-    netWeight: '250',
-    targetMarkets: ['IT', 'SM'],
-    ingredients: 'Fragole, Zucchero, Succo di limone concentrato, Gelificante: Pectina di frutta.',
-    fruitContent: '55g per 100g',
-    fruitPercentage: 55, // Valore per la barra dell'infografica
-    sugarContent: '60g per 100g',
-    sugarPercentage: 60, // Valore per la barra dell'infografica
-    allergens: ['Assenti. Prodotto in uno stabilimento che utilizza frutta a guscio.'],
-    storageInstructions: "Conservare in luogo fresco e asciutto. Dopo l'apertura in frigorifero a +4°C e consumare entro 14 giorni.",
+    netWeight: '250', // Aggiornato a 250g
+    targetMarkets: ['IT', 'SM'], // Italy, San Marino
+    
+    ingredients: 'Fragole, Zucchero, Gelificante: pectina di frutta, Succo di limone concentrato.',
+    fruitContent: '50g per 100g',
+    fruitPercentage: 50,
+    sugarContent: '42g per 100g', 
+    sugarPercentage: 42,
+    allergens: ['Senza glutine.', 'Prodotto vegano.'],
+    storageInstructions: "Conservare in luogo asciutto e lontano da fonti di calore. Dopo l'apertura conservare in frigorifero e consumare entro 14 giorni.",
+    
+    nutrition: {
+      energyKJ: 805,
+      energyKcal: 190,
+      fat: 0,
+      saturatedFat: 0,
+      carbohydrates: 46,
+      sugars: 42,
+      fiber: 1.3,
+      protein: 0.4,
+      salt: 0.06
+    },
+
     packaging: [
       { type: 'Vaso', material: 'Vetro', code: 'GL 70', recycling: 'Vetro', icon: '🫙' },
-      { type: 'Capsula', material: 'Acciaio', code: 'FE 40', recycling: 'Metalli', icon: '🥫' }
+      { type: 'Tappo', material: 'Metallo', code: 'FE 40', recycling: 'Metallo', icon: '🥫' }
     ],
+    
+    // Brand fittizio per la demo GS1
     brandOwner: {
       name: 'GS1 Italy',
       streetAddress: 'Via Pietro Paleocapa 7',
@@ -62,6 +79,7 @@ export class ProductComponent implements OnInit {
       const scannedBatch = params.get('batch');
       const scannedBestBefore = params.get('bestBefore');
 
+      // Se non c'è GTIN nell'URL, usa quello di default richiesto
       this.product.gtin = scannedGtin || '08032089000147';
       this.product.batch = scannedBatch || '';
       this.product.bestBefore = scannedBestBefore || '';
@@ -94,12 +112,26 @@ export class ProductComponent implements OnInit {
         'schema:value': this.product.netWeight,
         'schema:unitCode': 'GRM',
       },
-      'gs1:ingredientStatement': `${this.product.ingredients} Frutta: ${this.product.fruitContent}. Zuccheri: ${this.product.sugarContent}.`,
+      'gs1:ingredientStatement': this.product.ingredients,
       'gs1:consumerStorageInstructions': this.product.storageInstructions,
+      
       'gs1:allergenInfo': {
         '@type': 'gs1:AllergenDetails',
-        'gs1:allergenStatement': this.product.allergens.join(', ')
+        'gs1:allergenStatement': this.product.allergens.join(' ')
       },
+      
+      'schema:nutrition': {
+        '@type': 'schema:NutritionInformation',
+        'schema:calories': `${this.product.nutrition.energyKcal} kcal`,
+        'schema:fatContent': `${this.product.nutrition.fat} g`,
+        'schema:saturatedFatContent': `${this.product.nutrition.saturatedFat} g`,
+        'schema:carbohydrateContent': `${this.product.nutrition.carbohydrates} g`,
+        'schema:sugarContent': `${this.product.nutrition.sugars} g`,
+        'schema:fiberContent': `${this.product.nutrition.fiber} g`,
+        'schema:proteinContent': `${this.product.nutrition.protein} g`,
+        'schema:sodiumContent': `${this.product.nutrition.salt} g`
+      },
+
       'gs1:packaging': [
         {
           '@type': 'gs1:Packaging',
@@ -109,8 +141,8 @@ export class ProductComponent implements OnInit {
         },
         {
           '@type': 'gs1:Packaging',
-          'gs1:packagingType': 'Lid',
-          'gs1:packagingMaterialTypeCode': 'STEEL',
+          'gs1:packagingType': 'Cap',
+          'gs1:packagingMaterialTypeCode': 'METAL',
           'gs1:packagingRecyclingProcessType': 'Metal recycling'
         }
       ],

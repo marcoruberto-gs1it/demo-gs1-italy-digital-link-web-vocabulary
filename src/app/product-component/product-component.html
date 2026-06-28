@@ -1,158 +1,188 @@
-<main class="w-full md:max-w-2xl mx-auto bg-slate-50/50 min-h-screen md:min-h-fit md:my-12 md:rounded-[2.5rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] pb-12 font-sans text-slate-800 relative overflow-hidden ring-1 ring-slate-900/5">
+<div class="min-h-screen bg-gs1-lightgray md:py-8 md:px-4 flex items-center justify-center font-sans text-gs1-darkgray">
   
-  <header class="relative w-full h-[35vh] min-h-[260px] md:h-[400px] flex justify-center items-center bg-gradient-to-br from-rose-100/80 via-white to-rose-50 overflow-hidden">
-    <div class="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px]"></div>
+  <main class="w-full max-w-md bg-white min-h-screen md:min-h-[85vh] md:max-h-[900px] md:rounded-[3rem] shadow-[0_30px_100px_-15px_rgba(0,44,108,0.3)] md:border-[8px] md:border-gs1-blue overflow-y-auto relative scrollbar-none flex flex-col justify-between">
     
-    <div class="absolute w-64 h-64 bg-rose-300/20 rounded-full blur-3xl"></div>
+    <div>
+      <header class="relative w-full h-64 flex justify-center items-center bg-gradient-to-b from-gs1-lightgray/80 via-white to-white pt-8">
+        <div class="absolute w-48 h-48 bg-gs1-blue/5 rounded-full blur-3xl -z-10"></div>
+        <img [src]="product.imageUrl" [alt]="product.nameIT" class="h-[90%] w-auto object-contain drop-shadow-[0_15px_25px_rgba(0,44,108,0.1)] transition-all duration-500 hover:scale-105">
+      </header>
 
-    <img [src]="product.imageUrl" [alt]="product.nameIT" class="relative z-10 w-auto h-[80%] object-contain drop-shadow-2xl transition-transform duration-700 hover:scale-110">
-    
-    <div class="absolute top-4 right-4 sm:top-6 sm:right-6 bg-white/70 backdrop-blur-lg px-4 py-2 rounded-2xl shadow-sm border border-white flex items-center gap-2 transition-all hover:bg-white/90">
-      <svg class="w-4 h-4 sm:w-5 sm:h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-      <span class="text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-widest">100% Naturale</span>
-    </div>
-  </header>
-
-  <div class="relative z-20 -mt-16 w-[92%] sm:w-[85%] mx-auto bg-white/80 backdrop-blur-2xl p-6 sm:p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-white/60">
-    <h1 class="text-2xl sm:text-4xl font-extrabold text-slate-900 mb-2 leading-tight tracking-tight">{{ product.nameIT }}</h1>
-    
-    <div class="flex flex-wrap items-center gap-2 sm:gap-3 text-sm sm:text-base text-slate-500 font-medium mb-6">
-      <span>{{ product.nameEN }}</span>
-      <span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
-      <span class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md text-xs font-bold">{{ product.netWeight }}g</span>
-    </div>
-    
-    <div class="inline-flex items-center gap-2.5 text-xs sm:text-sm font-bold text-emerald-700 bg-emerald-50/80 px-4 py-2.5 rounded-xl border border-emerald-100/50">
-      <span class="relative flex h-2.5 w-2.5">
-        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-      </span>
-      {{ product.stockDisplay }}
-    </div>
-  </div>
-
-  <div class="px-4 sm:px-8 mt-8 space-y-6 sm:space-y-8">
-
-    @if (hasBatch || hasBestBefore) {
-      <section class="relative bg-slate-900 rounded-[2rem] p-6 sm:p-8 text-white shadow-xl shadow-slate-900/20 overflow-hidden animate-fadeIn">
-        <div class="absolute -left-4 top-1/2 -translate-y-1/2 w-8 h-8 bg-slate-50 rounded-full"></div>
-        <div class="absolute -right-4 top-1/2 -translate-y-1/2 w-8 h-8 bg-slate-50 rounded-full"></div>
+      <section class="px-6 pt-4 pb-2">
+        <span class="text-[10px] font-black uppercase tracking-widest text-gs1-orange bg-gs1-orange/10 px-2.5 py-1 rounded-md border border-gs1-orange/20 inline-block mb-3">
+          {{ product.brandOwner.name }}
+        </span>
+        <h1 class="text-2xl sm:text-3xl font-black text-gs1-blue tracking-tight leading-tight mb-1 capitalize">
+          {{ product.nameIT }}
+        </h1>
+        <p class="text-xs text-gs1-mediumdark font-medium mb-4 italic capitalize">{{ product.nameEN }}</p>
         
-        <h2 class="text-xs font-black uppercase tracking-widest text-slate-400 mb-6 flex items-center gap-2">
-          <svg class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-          Dati di Tracciabilità
-        </h2>
-        
-        <div class="grid gap-6 sm:gap-4" [ngClass]="hasBatch && hasBestBefore ? 'grid-cols-1 sm:grid-cols-2 sm:divide-x sm:divide-slate-700/50 border-t border-dashed border-slate-700 pt-6' : 'grid-cols-1 border-t border-dashed border-slate-700 pt-6'">
-          
-          @if (hasBatch) {
-            <div class="sm:px-4 flex flex-col justify-center">
-              <span class="block text-[10px] sm:text-xs text-slate-400 mb-1.5">Lotto Produzione</span>
-              <strong class="font-mono text-base sm:text-lg tracking-widest text-emerald-300 break-all">{{ product.batch }}</strong>
-            </div>
-          }
-          
-          @if (hasBestBefore) {
-            <div class="sm:px-4 flex flex-col justify-center">
-              <span class="block text-[10px] sm:text-xs text-slate-400 mb-1.5">Scadenza (BBD)</span>
-              <strong class="font-mono text-base sm:text-lg tracking-widest text-rose-300">{{ product.bestBefore }}</strong>
-            </div>
-          }
+        <div class="flex items-center justify-between bg-gs1-lightgray/50 p-3 rounded-2xl border border-gs1-lightgray">
+          <div class="flex items-center gap-2 text-xs font-bold text-gs1-forest">
+            <span class="w-2 h-2 rounded-full bg-gs1-forest shadow-[0_0_8px_#00B74F]"></span>
+            <span>{{ product.stockDisplay }}</span>
+          </div>
+          <span class="text-xs font-bold text-gs1-darkgray bg-white px-2.5 py-1 rounded-xl shadow-sm border border-gs1-lightgray">{{ product.netWeight }}g e</span>
         </div>
       </section>
-    }
 
-    <section class="bg-white rounded-[2rem] p-6 sm:p-8 shadow-sm border border-slate-100 hover:shadow-md transition-shadow duration-300">
-      <h2 class="text-xs font-black uppercase tracking-widest text-slate-400 mb-6 flex items-center gap-2">
-        <svg class="w-5 h-5 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
-        Composizione
-      </h2>
-      
-      <div class="space-y-6">
-        <div class="group">
-          <div class="flex justify-between items-end mb-2.5">
-            <span class="text-sm font-bold text-slate-700 group-hover:text-rose-600 transition-colors">Frutta Utilizzata</span>
-            <span class="text-xs font-bold text-rose-700 bg-rose-50 px-2.5 py-1 rounded-lg border border-rose-100">{{ product.fruitContent }}</span>
-          </div>
-          <div class="w-full bg-slate-100/80 rounded-full h-3 overflow-hidden p-0.5 shadow-inner">
-            <div class="bg-gradient-to-r from-rose-400 to-rose-500 h-full rounded-full transition-all duration-1000 ease-out relative" [style.width.%]="product.fruitPercentage">
-              <div class="absolute inset-0 bg-white/20 w-full h-full"></div>
-            </div>
-          </div>
-        </div>
+      <div class="px-6 py-4 space-y-4">
 
-        <div class="group">
-          <div class="flex justify-between items-end mb-2.5">
-            <span class="text-sm font-bold text-slate-700 group-hover:text-amber-600 transition-colors">Zuccheri Totali</span>
-            <span class="text-xs font-bold text-amber-700 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-100">{{ product.sugarContent }}</span>
-          </div>
-          <div class="w-full bg-slate-100/80 rounded-full h-3 overflow-hidden p-0.5 shadow-inner">
-            <div class="bg-gradient-to-r from-amber-300 to-amber-500 h-full rounded-full transition-all duration-1000 ease-out relative" [style.width.%]="product.sugarPercentage">
-              <div class="absolute inset-0 bg-white/20 w-full h-full"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="mt-8 p-5 bg-slate-50/80 rounded-2xl border border-slate-100 text-sm text-slate-600 leading-relaxed">
-        <strong class="text-slate-800 block mb-1">Ingredienti:</strong>
-        {{ product.ingredients }}
-      </div>
-    </section>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-      
-      <section class="bg-gradient-to-b from-emerald-50/50 to-emerald-50 rounded-[2rem] p-6 sm:p-8 shadow-sm border border-emerald-100 h-full flex flex-col justify-between">
-        <h2 class="text-xs font-black uppercase tracking-widest text-emerald-700 mb-5 flex items-center gap-2">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-          Riciclo (PPWR)
-        </h2>
-        <div class="space-y-3">
-          @for (pack of product.packaging; track pack.type) {
-            <div class="group bg-white p-4 rounded-2xl shadow-sm border border-emerald-100/60 flex items-center justify-between hover:-translate-y-1 hover:shadow-md transition-all duration-300 cursor-default">
-              <div class="flex items-center gap-3">
-                <span class="text-2xl group-hover:scale-110 transition-transform">{{ pack.icon }}</span>
+        @if (hasBatch || hasBestBefore) {
+          <section class="bg-gs1-blue rounded-[2rem] p-5 text-white shadow-lg relative overflow-hidden animate-fadeIn">
+            <div class="absolute top-0 left-6 right-6 border-b border-dashed border-white/20 h-0"></div>
+            <h3 class="text-[10px] font-bold uppercase tracking-widest text-white/70 mb-4 flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4"></path></svg>
+              Verificato tramite GS1 Digital Link
+            </h3>
+            
+            <div class="grid gap-4" [ngClass]="hasBatch && hasBestBefore ? 'grid-cols-2' : 'grid-cols-1'">
+              @if (hasBatch) {
                 <div>
-                  <strong class="block text-slate-800 text-sm">{{ pack.type }}</strong>
-                  <span class="text-[11px] font-medium text-slate-400">{{ pack.material }} ({{ pack.code }})</span>
+                  <span class="block text-[10px] text-white/50 font-bold uppercase tracking-wider mb-0.5">Lotto</span>
+                  <strong class="font-mono text-sm text-gs1-peach break-all bg-black/20 px-2 py-1 rounded-md block">{{ product.batch }}</strong>
                 </div>
-              </div>
-              <span class="text-[10px] font-extrabold text-emerald-700 bg-emerald-50 px-2.5 py-1.5 rounded-lg border border-emerald-100">{{ pack.recycling }}</span>
+              }
+              @if (hasBestBefore) {
+                <div>
+                  <span class="block text-[10px] text-white/50 font-bold uppercase tracking-wider mb-0.5">Scadenza</span>
+                  <strong class="font-mono text-sm text-gs1-orange bg-black/20 px-2 py-1 rounded-md block">{{ product.bestBefore }}</strong>
+                </div>
+              }
             </div>
-          }
-        </div>
-      </section>
+          </section>
+        }
 
-      <section class="bg-gradient-to-b from-blue-50/50 to-blue-50 rounded-[2rem] p-6 sm:p-8 shadow-sm border border-blue-100 h-full">
-        <h2 class="text-xs font-black uppercase tracking-widest text-blue-700 mb-5 flex items-center gap-2">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-          Conservazione
-        </h2>
-        <div class="bg-white/60 p-5 rounded-2xl border border-blue-100/50 h-[calc(100%-3rem)]">
-          <p class="text-sm text-blue-900/80 leading-relaxed font-medium">{{ product.storageInstructions }}</p>
+        <section class="bg-white rounded-[2rem] p-5 border border-gs1-lightgray shadow-sm">
+          <h3 class="text-xs font-black uppercase tracking-widest text-gs1-mediumdark mb-4">Analisi Composizione</h3>
+          
+          <div class="grid grid-cols-2 gap-4">
+            <div class="bg-gs1-lightgray/30 p-4 rounded-2xl border border-gs1-lightgray flex flex-col items-center text-center shadow-sm">
+              <span class="text-xs font-bold text-gs1-darkgray mb-2">Frutta</span>
+              <div class="relative w-16 h-16 flex items-center justify-center rounded-full bg-gs1-peach/10 text-gs1-peach font-black text-sm border-2 border-gs1-peach/30">
+                {{ product.fruitPercentage }}%
+              </div>
+              <span class="text-[10px] font-medium text-gs1-mediumdark mt-2">{{ product.fruitContent }}</span>
+            </div>
+
+            <div class="bg-gs1-lightgray/30 p-4 rounded-2xl border border-gs1-lightgray flex flex-col items-center text-center shadow-sm">
+              <span class="text-xs font-bold text-gs1-darkgray mb-2">Zuccheri</span>
+              <div class="relative w-16 h-16 flex items-center justify-center rounded-full bg-gs1-orange/10 text-gs1-orange font-black text-sm border-2 border-gs1-orange/30">
+                {{ product.sugarPercentage }}%
+              </div>
+              <span class="text-[10px] font-medium text-gs1-mediumdark mt-2">{{ product.sugarContent }}</span>
+            </div>
+          </div>
+
+          <div class="mt-4 p-4 bg-gs1-lightgray/30 rounded-2xl border border-gs1-lightgray text-xs text-gs1-darkgray leading-relaxed">
+            <span class="font-bold text-gs1-blue block mb-0.5">Ingredienti completi:</span>
+            {{ product.ingredients }}
+          </div>
+        </section>
+
+        <section class="bg-white rounded-[2rem] p-5 border border-gs1-lightgray shadow-sm">
+          <h3 class="text-xs font-black uppercase tracking-widest text-gs1-mediumdark mb-4 flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-gs1-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+            Dichiarazione Nutrizionale (per 100g)
+          </h3>
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs text-left text-gs1-darkgray">
+              <thead class="text-[10px] uppercase bg-gs1-lightgray/50 text-gs1-mediumdark">
+                <tr>
+                  <th class="px-4 py-3 rounded-l-xl">Valore Medio</th>
+                  <th class="px-4 py-3 rounded-r-xl text-right">Quantità</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gs1-lightgray/50 font-medium">
+                <tr class="hover:bg-gs1-lightgray/20 transition-colors">
+                  <td class="px-4 py-3 font-bold text-gs1-blue">Energia</td>
+                  <td class="px-4 py-3 text-right">{{ product.nutrition.energyKJ }} kJ / {{ product.nutrition.energyKcal }} kcal</td>
+                </tr>
+                <tr class="hover:bg-gs1-lightgray/20 transition-colors">
+                  <td class="px-4 py-3">Grassi<br><span class="text-[10px] text-gs1-mediumdark pl-2">di cui saturi</span></td>
+                  <td class="px-4 py-3 text-right">{{ product.nutrition.fat }} g<br><span class="text-[10px] text-gs1-mediumdark">{{ product.nutrition.saturatedFat }} g</span></td>
+                </tr>
+                <tr class="hover:bg-gs1-lightgray/20 transition-colors">
+                  <td class="px-4 py-3">Carboidrati<br><span class="text-[10px] text-gs1-mediumdark pl-2">di cui zuccheri</span></td>
+                  <td class="px-4 py-3 text-right">{{ product.nutrition.carbohydrates }} g<br><span class="text-[10px] text-gs1-mediumdark">{{ product.nutrition.sugars }} g</span></td>
+                </tr>
+                <tr class="hover:bg-gs1-lightgray/20 transition-colors">
+                  <td class="px-4 py-3">Fibre</td>
+                  <td class="px-4 py-3 text-right">{{ product.nutrition.fiber }} g</td>
+                </tr>
+                <tr class="hover:bg-gs1-lightgray/20 transition-colors">
+                  <td class="px-4 py-3">Proteine</td>
+                  <td class="px-4 py-3 text-right">{{ product.nutrition.protein }} g</td>
+                </tr>
+                <tr class="hover:bg-gs1-lightgray/20 transition-colors">
+                  <td class="px-4 py-3">Sale</td>
+                  <td class="px-4 py-3 text-right">{{ product.nutrition.salt }} g</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <div class="mt-4 flex flex-wrap gap-2">
+            @for (allergen of product.allergens; track allergen) {
+              <span class="text-[10px] font-bold text-gs1-blue bg-gs1-blue/10 px-2 py-1 rounded-md border border-gs1-blue/20">
+                {{ allergen }}
+              </span>
+            }
+          </div>
+        </section>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          
+          <section class="bg-gs1-forest/5 rounded-[2rem] p-5 border border-gs1-forest/20 flex flex-col justify-between">
+            <h3 class="text-[10px] font-black uppercase tracking-widest text-gs1-forest mb-3 flex items-center gap-1">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+              Eco-Riciclo
+            </h3>
+            <div class="space-y-2">
+              @for (pack of product.packaging; track pack.type) {
+                <div class="bg-white p-2.5 rounded-xl border border-gs1-forest/20 flex items-center justify-between text-xs shadow-sm">
+                  <div>
+                    <span class="font-bold text-gs1-darkgray block leading-tight text-[11px]">{{ pack.type }}</span>
+                    <span class="text-[9px] text-gs1-mediumdark font-medium uppercase tracking-tight">{{ pack.code }}</span>
+                  </div>
+                  <span class="text-[9px] font-extrabold text-gs1-forest bg-gs1-forest/10 px-2 py-0.5 rounded">{{ pack.recycling }}</span>
+                </div>
+              }
+            </div>
+          </section>
+
+          <section class="bg-gs1-sky/5 rounded-[2rem] p-5 border border-gs1-sky/20 flex flex-col justify-between">
+            <h3 class="text-[10px] font-black uppercase tracking-widest text-gs1-sky mb-2 flex items-center gap-1">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              Uso e Cura
+            </h3>
+            <p class="text-[11px] font-medium text-gs1-darkgray leading-relaxed bg-white p-2.5 rounded-xl border border-gs1-sky/20 flex-grow shadow-sm">
+              {{ product.storageInstructions }}
+            </p>
+          </section>
+
         </div>
-      </section>
+
+      </div>
     </div>
 
-    <section class="bg-white rounded-[2rem] p-6 sm:p-8 shadow-sm border border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 relative overflow-hidden">
-      <div class="absolute -right-12 -top-12 w-40 h-40 bg-slate-50 rounded-full opacity-50 pointer-events-none"></div>
-
-      <div class="flex items-center gap-4 relative z-10">
-        <div class="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center shrink-0 border border-slate-100 shadow-sm">
-          <svg class="w-7 h-7 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+    <footer class="bg-gs1-lightgray/30 px-6 py-5 border-t border-gs1-lightgray flex items-center justify-between gap-4 mt-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-white border border-gs1-lightgray shadow-sm flex items-center justify-center text-gs1-blue">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
         </div>
         <div>
-          <span class="block text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-0.5">Brand Owner</span>
-          <strong class="block text-slate-800 text-sm mb-0.5">{{ product.brandOwner.name }}</strong>
-          <span class="text-xs text-slate-500 line-clamp-1">{{ product.brandOwner.streetAddress }} - {{ product.brandOwner.city }}</span>
+          <span class="block text-[8px] uppercase font-black text-gs1-mediumdark tracking-wider">Proprietario</span>
+          <strong class="block text-gs1-blue text-xs font-bold leading-tight">{{ product.brandOwner.name }}</strong>
+          <span class="text-[10px] text-gs1-mediumdark truncate max-w-[150px] block">{{ product.brandOwner.city }} ({{ product.brandOwner.province }})</span>
         </div>
       </div>
       
-      <div class="w-full sm:w-auto text-left sm:text-right relative z-10 border-t sm:border-t-0 sm:border-l border-slate-100 pt-4 sm:pt-0 sm:pl-6">
-        <span class="block uppercase tracking-widest font-bold text-slate-400 text-[10px] mb-2">GTIN / EAN</span>
-        <strong class="font-mono text-slate-700 bg-slate-50 px-3 py-2 rounded-xl border border-slate-100 text-sm tracking-wider shadow-inner">{{ product.gtin }}</strong>
+      <div class="text-right shrink-0">
+        <span class="block uppercase tracking-widest font-black text-gs1-mediumdark text-[8px] mb-1">GTIN / EAN</span>
+        <strong class="font-mono text-gs1-darkgray bg-white border border-gs1-lightgray px-2.5 py-1 rounded-xl text-[11px] shadow-sm tracking-wider">{{ product.gtin }}</strong>
       </div>
-    </section>
+    </footer>
 
-  </div>
-</main>
+  </main>
+</div>

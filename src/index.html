@@ -6,7 +6,33 @@
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+            },
+            colors: {
+              gs1: {
+                blue: '#002C6C',
+                orange: '#F26334',
+                darkgray: '#454545',
+                mediumdark: '#888B8D',
+                lightgray: '#F4F4F4',
+                forest: '#00B74F',
+                peach: '#FBB034',
+                sky: '#00B6DE'
+              }
+            }
+          }
+        }
+      }
+    </script>
   </head>
   <body>
     <app-root>Loading...</app-root>
