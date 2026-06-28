@@ -1,9 +1,7 @@
-name: Deploy Angular to GitHub Pages
-
 on:
   push:
     branches:
-      - main # Cambia in 'master' se il tuo branch principale si chiama master
+      - main  # Cambia in master se il tuo branch principale si chiama master
 
 permissions:
   contents: write
@@ -11,28 +9,39 @@ permissions:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
-      - name: 📥 Checkout repository
-        uses: actions/checkout@v5
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-      - name: ⚙️ Setup Node.js
-        uses: actions/setup-node@v5
+      - name: Setup Node.js (v24)
+        uses: actions/setup-node@v4
         with:
-          node-version: '24'
-          cache: 'npm'
+          node-version: 24
 
-      - name: 📦 Install dependencies
-        run: npm ci
+      - name: Install Dependencies
+        # Usiamo --legacy-peer-deps per evitare blocchi causati da discrepanze di versioni tipiche di StackBlitz
+        run: npm install --legacy-peer-deps
 
-      - name: 🔨 Build Angular project
-        # Inserisce dinamicamente il nome del tuo repository come base-href
-        run: npx ng build --base-href=/${{ github.event.repository.name }}/
+      - name: Build Angular Application
+        # Sfruttiamo lo script nativo del package.json per evitare l'Exit Code 3 della CLI
+        run: npm run build -- --base-href /demo-gs1-italy-digital-link-web-vocabulary/
 
-      - name: 🚀 Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Verify Content and Find Output Folder
+        # Questo comando elenca i file nel log così vediamo dove Angular ha salvato la build
+        run: |
+          echo "=== Contenuto della root ==="
+          ls -la
+          echo "=== Contenuto di dist (se esiste) ==="
+          ls -R dist || echo "Nessuna cartella dist trovata"
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          # SOSTITUISCI QUI SOTTO CON IL NOME DEL TUO PROGETTO (guarda in angular.json o nella cartella dist)
-          # Se usi Angular 17 o superiore con esbuild, di solito il percorso finisce con /browser
-          publish_dir: ./dist/demo/browser/
+          # Puntiamo alla cartella di distribuzione standard generata dagli script di StackBlitz
+          folder: dist/demo/browser/
+          branch: gh-pages
+          clean: true
