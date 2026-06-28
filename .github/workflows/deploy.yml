@@ -1,7 +1,10 @@
+name: Deploy Angular to GitHub Pages
+
 on:
   push:
     branches:
-      - main  # Cambia in master se il tuo branch principale si chiama master
+      - main
+      - master # <-- Aggiunto per evitare blocchi se il tuo branch si chiama master!
 
 permissions:
   contents: write
@@ -14,34 +17,33 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
-      - name: Checkout Code
+      - name: 📥 Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js (v24)
+      - name: ⚙️ Setup Node.js (v24)
         uses: actions/setup-node@v4
         with:
           node-version: 24
 
-      - name: Install Dependencies
-        # Usiamo --legacy-peer-deps per evitare blocchi causati da discrepanze di versioni tipiche di StackBlitz
+      - name: 📦 Install Dependencies
         run: npm install --legacy-peer-deps
 
-      - name: Build Angular Application
-        # Sfruttiamo lo script nativo del package.json per evitare l'Exit Code 3 della CLI
+      - name: 🔨 Build Angular Application
         run: npm run build -- --base-href /demo-gs1-italy-digital-link-web-vocabulary/
 
-      - name: Verify Content and Find Output Folder
-        # Questo comando elenca i file nel log così vediamo dove Angular ha salvato la build
+      - name: 🔍 Verify Content and Find Output Folder
         run: |
           echo "=== Contenuto della root ==="
           ls -la
           echo "=== Contenuto di dist (se esiste) ==="
           ls -R dist || echo "Nessuna cartella dist trovata"
 
-      - name: Deploy to GitHub Pages
+      - name: 🛠️ Fix SPA Routing (404 Trick)
+        run: find dist -name "index.html" -execdir cp {} 404.html \;
+
+      - name: 🚀 Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          # Puntiamo alla cartella di distribuzione standard generata dagli script di StackBlitz
-          folder: dist/demo/browser/
+          folder: dist/demo/browser/ # <-- Assicurati che coincida con la cartella che vedi nel log dello step "Verify Content"
           branch: gh-pages
           clean: true
