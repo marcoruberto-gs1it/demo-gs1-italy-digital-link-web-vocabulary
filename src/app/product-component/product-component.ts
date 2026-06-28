@@ -6,14 +6,19 @@ import { ActivatedRoute } from '@angular/router';
   selector: 'app-product',
   imports: [CommonModule],
   standalone: true,
-  templateUrl: './product-component.html',
-  styles: [],
+  templateUrl: './product-component.html'
 })
 export class ProductComponent implements OnInit {
+  // Flag di visibilità condizionale
+  hasBatch = false;
+  hasBestBefore = false;
+
   product = {
     nameIT: 'Marmellata di fragole Extra',
     nameEN: 'Extra Strawberry Jam',
-    gtin: '', // Lo lasceremo vuoto perché lo prenderemo dinamicamente dall'URL!
+    gtin: '', 
+    batch: '',
+    bestBefore: '',
     imageUrl: 'https://demo.gs1it.org/gtin/08032089000147/front.png',
     price: '3.90',
     oldPrice: '4.50',
@@ -24,32 +29,14 @@ export class ProductComponent implements OnInit {
     gpcCode: '10000217',
     netWeight: '250',
     targetMarkets: ['IT', 'SM'],
-    batch: 'L-24082',
-    bestBefore: '2026-10-30',
-    ingredients:
-      'Fragole, Zucchero, Succo di limone concentrato, Gelificante: Pectina di frutta.',
+    ingredients: 'Fragole, Zucchero, Succo di limone concentrato, Gelificante: Pectina di frutta.',
     fruitContent: '55g per 100g di prodotto',
     sugarContent: '60g per 100g di prodotto',
-    allergens: [
-      'Assenti. Prodotto in uno stabilimento che utilizza frutta a guscio.',
-    ],
-    storageInstructions:
-      "Conservare in luogo fresco e asciutto. Dopo l'apertura conservare in frigorifero a +4°C e consumare entro 14 giorni.",
+    allergens: ['Assenti. Prodotto in uno stabilimento che utilizza frutta a guscio.'],
+    storageInstructions: "Conservare in luogo fresco e asciutto. Dopo l'apertura conservare in frigorifero a +4°C e consumare entro 14 giorni.",
     packaging: [
-      {
-        type: 'Vaso',
-        material: 'Vetro',
-        code: 'GL 70',
-        recycling: 'Raccolta Vetro',
-        icon: '🫙',
-      },
-      {
-        type: 'Capsula',
-        material: 'Acciaio',
-        code: 'FE 40',
-        recycling: 'Raccolta Metalli',
-        icon: '🥫',
-      },
+      { type: 'Vaso', material: 'Vetro', code: 'GL 70', recycling: 'Vetro', icon: '🫙' },
+      { type: 'Capsula', material: 'Acciaio', code: 'FE 40', recycling: 'Metalli', icon: '🥫' }
     ],
     brandOwner: {
       name: 'GS1 Italy',
@@ -58,42 +45,54 @@ export class ProductComponent implements OnInit {
       city: 'Milano',
       province: 'MI',
       countryCode: 'IT',
-      website: 'http://gs1it.org',
-    },
+      website: 'http://gs1it.org'
+    }
   };
 
   constructor(
     private renderer: Renderer2,
     @Inject(DOCUMENT) private document: Document,
-    private route: ActivatedRoute // Iniettiamo lo strumento per leggere l'URL
+    private route: ActivatedRoute 
   ) {}
 
   ngOnInit(): void {
-    // Ci iscriviamo ai cambiamenti dell'URL
-    this.route.paramMap.subscribe((params) => {
-      // Estraiamo il valore di :gtin dal path '01/:gtin'
+    this.route.paramMap.subscribe(params => {
       const scannedGtin = params.get('gtin');
+      const scannedBatch = params.get('batch');
+      const scannedBestBefore = params.get('bestBefore');
 
-      if (scannedGtin) {
-        this.product.gtin = scannedGtin;
-      }
+      // Assegnazione dati dinamici dall'URL
+      this.product.gtin = scannedGtin || '08032089000147';
+      this.product.batch = scannedBatch || '';
+      this.product.bestBefore = scannedBestBefore || '';
 
-      // SOLO DOPO aver aggiornato il GTIN, generiamo il "gemello digitale"
+      // Attivazione condizionale delle sezioni
+      this.hasBatch = !!scannedBatch;
+      this.hasBestBefore = !!scannedBestBefore;
+
       this.injectJsonLd();
     });
   }
 
   private injectJsonLd(): void {
-    const jsonLd = {
+    // 1. Costruiamo l'ID canonico dinamico in base ai dati presenti nell'URL
+    let canonicalId = `https://id.gs1.org/01/${this.product.gtin}`;
+    if (this.hasBatch) {
+      canonicalId += `/10/${this.product.batch}`;
+    }
+    if (this.hasBestBefore) {
+      canonicalId += `/17/${this.product.bestBefore}`;
+    }
+
+    // 2. Costruiamo il bizz-tree del JSON-LD base
+    const jsonLd: any = {
       '@context': ['https://schema.org/', { gs1: 'https://gs1.org/voc/' }],
-      '@id': `https://id.gs1.org/01/${this.product.gtin}/10/${this.product.batch}`,
+      '@id': canonicalId,
       '@type': ['Product', 'gs1:FoodAndBeverage'],
-      'gs1:gtin': this.product.gtin, // Adesso usa il GTIN reale scansionato dall'URL!
-      'gs1:batchLotNumber': this.product.batch,
-      'gs1:bestBeforeDate': this.product.bestBefore,
+      'gs1:gtin': this.product.gtin,
       'gs1:productName': [
         { '@value': this.product.nameIT, '@language': 'it' },
-        { '@value': this.product.nameEN, '@language': 'en' },
+        { '@value': this.product.nameEN, '@language': 'en' }
       ],
       'schema:image': this.product.imageUrl,
       'gs1:gpcCategoryCode': this.product.gpcCode,
@@ -106,28 +105,28 @@ export class ProductComponent implements OnInit {
       'gs1:consumerStorageInstructions': this.product.storageInstructions,
       'gs1:allergenInfo': {
         '@type': 'gs1:AllergenDetails',
-        'gs1:allergenStatement': this.product.allergens.join(', '),
+        'gs1:allergenStatement': this.product.allergens.join(', ')
       },
       'gs1:packaging': [
         {
           '@type': 'gs1:Packaging',
           'gs1:packagingType': 'Jar',
           'gs1:packagingMaterialTypeCode': 'GLASS',
-          'gs1:packagingRecyclingProcessType': 'Glass recycling',
+          'gs1:packagingRecyclingProcessType': 'Glass recycling'
         },
         {
           '@type': 'gs1:Packaging',
           'gs1:packagingType': 'Lid',
           'gs1:packagingMaterialTypeCode': 'STEEL',
-          'gs1:packagingRecyclingProcessType': 'Metal recycling',
-        },
+          'gs1:packagingRecyclingProcessType': 'Metal recycling'
+        }
       ],
       'schema:offers': {
         '@type': 'schema:Offer',
         'schema:price': this.product.price,
         'schema:priceCurrency': this.product.currency,
         'schema:availability': `https://schema.org/${this.product.stockStatus}`,
-        'schema:url': 'https://gs1it.org/shop/marmellata-fragole',
+        'schema:url': 'https://gs1it.org/shop/marmellata-fragole'
       },
       'gs1:brandOwner': {
         '@type': 'gs1:Organization',
@@ -141,11 +140,25 @@ export class ProductComponent implements OnInit {
           'gs1:addressRegion': this.product.brandOwner.province,
           'gs1:addressCountry': {
             '@type': 'gs1:Country',
-            'gs1:countryCode': this.product.brandOwner.countryCode,
-          },
-        },
-      },
+            'gs1:countryCode': this.product.brandOwner.countryCode
+          }
+        }
+      }
     };
+
+    // 3. Arricchiamo il JSON-LD a seconda delle chiavi presenti nell'URL
+    if (this.hasBatch) {
+      jsonLd['gs1:batchLotNumber'] = this.product.batch;
+    }
+    if (this.hasBestBefore) {
+      jsonLd['gs1:bestBeforeDate'] = this.product.bestBefore;
+    }
+
+    // Rimozione vecchi script per evitare duplicati al cambio rotta
+    const existingScript = this.document.head.querySelector('script[type="application/ld+json"]');
+    if (existingScript) {
+      this.renderer.removeChild(this.document.head, existingScript);
+    }
 
     const script = this.renderer.createElement('script');
     script.type = 'application/ld+json';
