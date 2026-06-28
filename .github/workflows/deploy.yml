@@ -29,10 +29,6 @@ jobs:
         # Inserisce dinamicamente il nome del tuo repository come base-href
         run: npx ng build --base-href=/${{ github.event.repository.name }}/
 
-      - name: 🛠️ Fix SPA Routing (404 Trick)
-        # Copia index.html in 404.html per ingannare GitHub Pages e fargli gestire le rotte (come /01/gtin)
-        run: cp dist/*/browser/index.html dist/*/browser/404.html || cp dist/*/index.html dist/*/404.html
-
       - name: 🚀 Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
