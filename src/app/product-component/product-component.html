@@ -30,7 +30,7 @@
               <strong>{{ product.netWeight }}g e</strong>
             </div>
             <div class="text-xs font-bold text-gs1-darkgray bg-white p-2.5 rounded-xl shadow-sm border border-gs1-lightgray flex items-center justify-between">
-              <span class="text-gs1-mediumdark font-medium">Mercato:</span>
+              <span class="text-gs1-mediumdark font-medium">Target:</span>
               <strong class="text-gs1-blue">IT</strong>
             </div>
           </div>
@@ -105,7 +105,7 @@
               <thead class="bg-gs1-lightgray/50 text-gs1-mediumdark font-black uppercase text-[9px]">
                 <tr>
                   <th class="px-3 py-2 rounded-l-lg">Nutriente</th>
-                  <th class="px-3 py-2 rounded-r-lg text-right">Valore per 100g</th>
+                  <th class="px-3 py-2 rounded-r-lg text-right">Quantità</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-gs1-lightgray/50 font-semibold">
@@ -142,15 +142,22 @@
           </div>
         </section>
 
-        <section class="bg-white rounded-[2rem] p-6 border border-gs1-lightgray shadow-sm space-y-4">
+        <section class="bg-white rounded-[2rem] p-6 border border-gs1-lightgray shadow-sm flex flex-col justify-between space-y-4">
           <div>
-            <h3 class="text-xs font-black uppercase tracking-widest text-gs1-mediumdark mb-2">Ingredienti (Reg. UE 1169/11)</h3>
-            <p class="text-xs text-gs1-darkgray leading-relaxed font-medium p-3 bg-gs1-lightgray/30 rounded-xl border border-gs1-lightgray">
-              {{ product.ingredients }}
-            </p>
+            <h3 class="text-xs font-black uppercase tracking-widest text-gs1-mediumdark mb-3">Ingredienti Granulari</h3>
+            <div class="space-y-2">
+              @for (ing of product.ingredientsList; track ing.name) {
+                <div class="flex items-center justify-between p-2.5 bg-gs1-lightgray/30 rounded-xl border border-gs1-lightgray text-xs font-semibold">
+                  <span class="text-gs1-darkgray">{{ ing.name }}</span>
+                  @if (ing.percentage) {
+                    <span class="font-mono text-gs1-peach bg-gs1-peach/10 px-2 py-0.5 rounded border border-gs1-peach/20">{{ ing.percentage }}</span>
+                  }
+                </div>
+              }
+            </div>
           </div>
           <div>
-            <span class="block text-[10px] font-black uppercase tracking-wider text-red-600 mb-1.5">Avvertenza Contaminazioni Crociate</span>
+            <span class="block text-[10px] font-black uppercase tracking-wider text-red-600 mb-1.5">Tracciabilità Allergeni di Fabbrica</span>
             <p class="text-[11px] text-gs1-mediumdark leading-relaxed font-semibold italic bg-red-50/60 p-3 rounded-xl border border-red-100">
               {{ product.allergensStatement }}
             </p>
@@ -158,26 +165,32 @@
         </section>
 
         <section class="bg-white rounded-[2rem] p-6 border border-gs1-lightgray shadow-sm space-y-3">
-          <h3 class="text-xs font-black uppercase tracking-widest text-gs1-blue">Scheda Tecnica Logistica</h3>
+          <h3 class="text-xs font-black uppercase tracking-widest text-gs1-blue flex items-center justify-between">
+            <span>Scheda Master Logistica</span>
+            <span class="text-[9px] text-gs1-mediumdark font-mono uppercase tracking-normal">GPC: {{ product.gpcCode }}</span>
+          </h3>
+          
           <div class="grid grid-cols-3 gap-2 text-center text-[10px] font-bold">
-            <div class="bg-gs1-lightgray/40 p-2 rounded-lg">
+            <div class="bg-gs1-lightgray/40 p-2 rounded-lg border border-gs1-lightgray/40">
               <span class="text-gs1-mediumdark block font-medium">Altezza</span>
               <strong class="font-mono text-gs1-darkgray text-xs">{{ product.dimensions.height }}{{ product.dimensions.unit }}</strong>
             </div>
-            <div class="bg-gs1-lightgray/40 p-2 rounded-lg">
+            <div class="bg-gs1-lightgray/40 p-2 rounded-lg border border-gs1-lightgray/40">
               <span class="text-gs1-mediumdark block font-medium">Larghezza</span>
               <strong class="font-mono text-gs1-darkgray text-xs">{{ product.dimensions.width }}{{ product.dimensions.unit }}</strong>
             </div>
-            <div class="bg-gs1-lightgray/40 p-2 rounded-lg">
+            <div class="bg-gs1-lightgray/40 p-2 rounded-lg border border-gs1-lightgray/40">
               <span class="text-gs1-mediumdark block font-medium">Profondità</span>
               <strong class="font-mono text-gs1-darkgray text-xs">{{ product.dimensions.depth }}{{ product.dimensions.unit }}</strong>
             </div>
           </div>
-          <div class="space-y-1.5 pt-1.5 border-t border-gs1-lightgray text-[11px] font-semibold text-gs1-darkgray">
-            <div class="flex justify-between"><span>Peso Lordo Trade Item:</span> <span class="font-mono">{{ product.grossWeight }}g</span></div>
-            <div class="flex justify-between"><span>Unità Base (Base Each):</span> <span class="text-gs1-forest">SÌ</span></div>
-            <div class="flex justify-between"><span>Unità Consumatore:</span> <span class="text-gs1-forest">SÌ</span></div>
-            <div class="flex justify-between"><span>Codice GPC Brick:</span> <span class="font-mono text-gs1-blue">{{ product.gpcCode }}</span></div>
+          
+          <div class="space-y-1.5 pt-2 border-t border-gs1-lightgray text-[11px] font-semibold text-gs1-darkgray">
+            <div class="flex justify-between"><span>Peso Netto Unità:</span> <span class="font-mono">{{ product.netWeight }}g</span></div>
+            <div class="flex justify-between"><span>Peso Lordo Confezione:</span> <span class="font-mono">{{ product.grossWeight }}g</span></div>
+            <div class="flex justify-between"><span>Unità Logistica Base (Each):</span> <span class="text-gs1-forest">SÌ (True)</span></div>
+            <div class="flex justify-between"><span>Unità di Consumo:</span> <span class="text-gs1-forest">SÌ (True)</span></div>
+            <div class="flex justify-between"><span>GLN Fornitore:</span> <span class="font-mono text-gs1-blue tracking-tight">{{ product.brandOwner.gln }}</span></div>
           </div>
         </section>
 
@@ -228,7 +241,7 @@
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
         </div>
         <div>
-          <span class="block text-[9px] uppercase font-black text-gs1-mediumdark tracking-wider mb-0.5">Fornitore delle Informazioni anagrafiche</span>
+          <span class="block text-[9px] uppercase font-black text-gs1-mediumdark tracking-wider mb-0.5">Fornitore delle Informazioni Anagrafiche</span>
           <strong class="block text-gs1-blue text-xs font-bold leading-tight mb-0.5">{{ product.brandOwner.name }}</strong>
           <span class="text-[11px] text-gs1-mediumdark block leading-snug">{{ product.brandOwner.streetAddress }}, {{ product.brandOwner.postalCode }} {{ product.brandOwner.city }} ({{ product.brandOwner.province }}) - {{ product.brandOwner.telephone }}</span>
         </div>
