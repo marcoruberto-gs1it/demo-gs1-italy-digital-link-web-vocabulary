@@ -1,6 +1,7 @@
 <div class="min-h-screen bg-gs1-lightgray md:py-10 md:px-6 lg:px-8 flex items-start justify-center font-sans text-gs1-darkgray">
   
   <main class="w-full max-w-6xl bg-white min-h-screen md:min-h-fit md:rounded-[2rem] shadow-2xl relative flex flex-col overflow-hidden overflow-y-auto custom-scrollbar">
+    
     <div class="flex flex-col md:flex-row border-b border-gs1-lightgray/60">
       
       <header class="w-full md:w-2/5 h-72 md:h-auto min-h-[300px] lg:min-h-[400px] relative flex justify-center items-center bg-gradient-to-b md:bg-gradient-to-br from-gs1-lightgray/80 via-white to-white p-8">
@@ -33,7 +34,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
         @if (hasBatch || hasBestBefore) {
-          <section class="md:col-span-2 lg:col-span-3 bg-gs1-blue rounded-[2rem] p-6 md:p-8 text-white shadow-lg relative overflow-hidden animate-fadeIn">
+          <section class="md:col-span-2 lg:col-span-3 bg-gs1-blue rounded-[2rem] p-6 md:p-8 text-white shadow-lg relative overflow-hidden">
             <div class="absolute top-0 left-8 right-8 border-b border-dashed border-white/20 h-0"></div>
             <h3 class="text-xs font-bold uppercase tracking-widest text-white/70 mb-5 flex items-center gap-2">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4"></path></svg>
@@ -50,7 +51,7 @@
               @if (hasBestBefore) {
                 <div>
                   <span class="block text-xs text-white/50 font-bold uppercase tracking-wider mb-1.5">Scadenza Consigliata</span>
-                  <strong class="font-mono text-lg text-gs1-orange bg-black/20 px-3 py-1.5 rounded-lg inline-block">{{ product.bestBefore }}</strong>
+                  <strong class="font-mono text-lg text-gs1-orange bg-black/20 px-3 py-1.5 rounded-lg inline-block">{{ product.bestBeforeFormatted }}</strong>
                 </div>
               }
             </div>

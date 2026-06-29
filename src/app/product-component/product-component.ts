@@ -12,13 +12,15 @@ export class ProductComponent implements OnInit {
   hasBatch = false;
   hasBestBefore = false;
 
-  // Dati prodotto aggiornati secondo le tue specifiche e combinati con dati realistici
+  // Modello dati consolidato e fittizio per la demo GS1 Italy
   product = {
     nameIT: 'Marmellata di fragole',
     nameEN: 'Strawberry jam',
     gtin: '', 
     batch: '',
     bestBefore: '',
+    bestBeforeFormatted: '', // Data per gli umani (DD/MM/YYYY)
+    bestBeforeIso: '',       // Data standard ISO per il JSON-LD (YYYY-MM-DD)
     imageUrl: 'https://demo.gs1it.org/gtin/08032089000147/front.png', 
     price: '2.89',
     oldPrice: '3.50',
@@ -27,7 +29,7 @@ export class ProductComponent implements OnInit {
     stockDisplay: 'Disponibile',
     gpcCategory: '10000217 Marmellate/Confetture (Ambiente)',
     gpcCode: '10000217',
-    netWeight: '250', // Aggiornato a 250g
+    netWeight: '250',
     targetMarkets: ['IT', 'SM'], // Italy, San Marino
     
     ingredients: 'Fragole, Zucchero, Gelificante: pectina di frutta, Succo di limone concentrato.',
@@ -55,7 +57,6 @@ export class ProductComponent implements OnInit {
       { type: 'Tappo', material: 'Metallo', code: 'FE 40', recycling: 'Metallo', icon: '🥫' }
     ],
     
-    // Brand fittizio per la demo GS1
     brandOwner: {
       name: 'GS1 Italy',
       streetAddress: 'Via Pietro Paleocapa 7',
@@ -79,13 +80,25 @@ export class ProductComponent implements OnInit {
       const scannedBatch = params.get('batch');
       const scannedBestBefore = params.get('bestBefore');
 
-      // Se non c'è GTIN nell'URL, usa quello di default richiesto
       this.product.gtin = scannedGtin || '08032089000147';
       this.product.batch = scannedBatch || '';
       this.product.bestBefore = scannedBestBefore || '';
 
       this.hasBatch = !!scannedBatch;
       this.hasBestBefore = !!scannedBestBefore;
+
+      // Algoritmo di decodifica Data GS1 (Formato YYMMDD)
+      if (this.hasBestBefore && this.product.bestBefore.length === 6) {
+        const yy = this.product.bestBefore.substring(0, 2);
+        const mm = this.product.bestBefore.substring(2, 4);
+        const dd = this.product.bestBefore.substring(4, 6);
+        
+        this.product.bestBeforeFormatted = `${dd}/${mm}/20${yy}`;
+        this.product.bestBeforeIso = `20${yy}-${mm}-${dd}`;
+      } else {
+        this.product.bestBeforeFormatted = this.product.bestBefore;
+        this.product.bestBeforeIso = this.product.bestBefore;
+      }
 
       this.injectJsonLd();
     });
@@ -120,24 +133,22 @@ export class ProductComponent implements OnInit {
         'gs1:allergenStatement': this.product.allergens.join(' ')
       },
       
-      // 1. Dichiariamo la base di calcolo nutrizionale (es. su 100 grammi)
+      // Struttura a norma GS1 Web Vocabulary per i valori nutrizionali
       'gs1:nutrientBasisQuantity': {
         '@type': 'gs1:QuantitativeValue',
         'schema:value': '100',
         'schema:unitCode': 'GRM'
       },
-      
-      // 2. Dichiariamo i nutrienti esatti con il GS1 Web Vocabulary
       'gs1:energyPerNutrientBasis': [
         {
           '@type': 'gs1:NutritionMeasurementType',
           'schema:value': this.product.nutrition.energyKcal,
-          'schema:unitCode': 'E14' // Codice standard UN/CEFACT per Kilocalorie
+          'schema:unitCode': 'E14' // Kilocalorie
         },
         {
           '@type': 'gs1:NutritionMeasurementType',
           'schema:value': this.product.nutrition.energyKJ,
-          'schema:unitCode': 'KJO' // Codice standard UN/CEFACT per Kilojoule
+          'schema:unitCode': 'KJO' // Kilojoule
         }
       ],
       'gs1:fatPerNutrientBasis': {
@@ -209,7 +220,7 @@ export class ProductComponent implements OnInit {
     };
 
     if (this.hasBatch) jsonLd['gs1:batchLotNumber'] = this.product.batch;
-    if (this.hasBestBefore) jsonLd['gs1:bestBeforeDate'] = this.product.bestBefore;
+    if (this.hasBestBefore) jsonLd['gs1:bestBeforeDate'] = this.product.bestBeforeIso;
 
     const existingScript = this.document.head.querySelector('script[type="application/ld+json"]');
     if (existingScript) this.renderer.removeChild(this.document.head, existingScript);
