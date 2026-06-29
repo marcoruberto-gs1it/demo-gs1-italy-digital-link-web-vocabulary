@@ -36,8 +36,12 @@
             </span>
           </div>
   
+
           <div class="relative rounded-2xl overflow-hidden bg-black aspect-square border-2 border-gs1-blue/30 shadow-inner">
-            <zxing-scanner (scanSuccess)="onCodeResult($event)"></zxing-scanner>
+            <zxing-scanner 
+                [videoConstraints]="videoConstraints"
+              (scanSuccess)="onCodeResult($event)">
+            </zxing-scanner>
             
             <div class="absolute inset-0 border-[3rem] border-black/40 flex items-center justify-center pointer-events-none">
               <div class="w-full h-full border-2 border-dashed border-gs1-orange relative">
