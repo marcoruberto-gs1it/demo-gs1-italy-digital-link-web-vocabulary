@@ -22,7 +22,7 @@ export const routes: Routes = [
   {
     // Default fallback se l'URL non è completo
     path: '**',
-    redirectTo: '01/08032089000147',
+    redirectTo: '01/8005360007746',
     pathMatch: 'full',
   },
 ];

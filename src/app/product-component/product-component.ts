@@ -12,59 +12,91 @@ export class ProductComponent implements OnInit {
   hasBatch = false;
   hasBestBefore = false;
 
-  // Modello dati consolidato e fittizio per la demo GS1 Italy
+  // Dati reali estratti dalle fonti ufficiali GS1 del prodotto
   product = {
-    nameIT: 'Marmellata di fragole',
-    nameEN: 'Strawberry jam',
-    gtin: '', 
+    nameIT: 'Confettura extra di fragole a ridotto contenuto di zuccheri',
+    functionalName: 'Confettura light',
+    shortDescription: 'Confettura Fragola Light',
+    gtin: '8005360007746', 
     batch: '',
     bestBefore: '',
-    bestBeforeFormatted: '', // Data per gli umani (DD/MM/YYYY)
-    bestBeforeIso: '',       // Data standard ISO per il JSON-LD (YYYY-MM-DD)
-    imageUrl: 'https://demo.gs1it.org/gtin/08032089000147/front.png', 
-    price: '2.89',
-    oldPrice: '3.50',
+    bestBeforeFormatted: '',
+    bestBeforeIso: '',
+    imageUrl: 'https://assets.core.gs1it.org/images/7603330716851311642_md_fast.png', 
+    price: '2.49',
+    oldPrice: '2.99',
     currency: 'EUR',
     stockStatus: 'InStock',
     stockDisplay: 'Disponibile',
-    gpcCategory: '10000217 Marmellate/Confetture (Ambiente)',
+    gpcCategory: '10000217 - Marmellate/Confetture (Ambiente)',
     gpcCode: '10000217',
-    netWeight: '250',
-    targetMarkets: ['IT', 'SM'], // Italy, San Marino
+    targetMarkets: ['ITALIA (380)'],
     
-    ingredients: 'Fragole, Zucchero, Gelificante: pectina di frutta, Succo di limone concentrato.',
-    fruitContent: '50g per 100g',
-    fruitPercentage: 50,
-    sugarContent: '42g per 100g', 
-    sugarPercentage: 42,
-    allergens: ['Senza glutine.', 'Prodotto vegano.'],
-    storageInstructions: "Conservare in luogo asciutto e lontano da fonti di calore. Dopo l'apertura conservare in frigorifero e consumare entro 14 giorni.",
+    // --- DATI DI ETICHETTA E COMPOSIZIONE ---
+    ingredients: 'Fragole, acqua, zucchero, gelificante: pectina da frutta.',
+    fruitContent: '70g per 100g di prodotto finito',
+    fruitPercentage: 70,
+    sugarContent: '20g per 100g', 
+    sugarPercentage: 20, 
     
-    nutrition: {
-      energyKJ: 805,
-      energyKcal: 190,
-      fat: 0,
-      saturatedFat: 0,
-      carbohydrates: 46,
-      sugars: 42,
-      fiber: 1.3,
-      protein: 0.4,
-      salt: 0.06
+    // Allergeni con evidenza delle contaminazioni crociate (MAY_CONTAIN)
+    allergensStatement: 'Prodotto in uno stabilimento che utilizza sedano, latte, soia, frutta a guscio, pesce e molluschi.',
+    allergensList: ['Sedano', 'Pesce', 'Latte', 'Molluschi', 'Soia', 'Frutta a guscio'],
+    
+    // --- MARKETING & SICUREZZA ---
+    brandName: 'Le Conserve della Nonna',
+    subBrand: 'Light',
+    marketingText: 'Le nostre confetture Light nascono dalla frutta migliore e da ricette semplici, come fatte in casa. Zero edulcoranti e 50% di zuccheri in meno*, per esaltare il gusto autentico della frutta.',
+    features: ['-50% di zuccheri*', 'Zero edulcoranti', '70% di Frutta', 'Fragola Italiana'],
+    safetyWarning: 'CAPSULA DI SICUREZZA: RIFIUTARE SE IL BOTTONE È RIALZATO',
+    storageInstructions: 'Dopo l\'apertura conservare in frigorifero e consumare entro 7 giorni.',
+    storageType: 'Ambiente',
+    
+    // --- DATI LOGISTICI COMPLETI ---
+    netWeight: '235',
+    grossWeight: '388',
+    dimensions: {
+      height: '127',
+      width: '58',
+      depth: '58',
+      unit: 'mm'
+    },
+    logisticsInfo: {
+      isBaseUnit: true,
+      isConsumerUnit: true,
+      isOrderable: false,
+      isInvoiceable: true
     },
 
+    // --- VALORI NUTRIZIONALI REALI ---
+    nutrition: {
+      energyKJ: 383,
+      energyKcal: 91,
+      fat: 0,
+      saturatedFat: 0,
+      carbohydrates: 22,
+      sugars: 20,
+      fiber: 0,
+      protein: 0,
+      salt: 0
+    },
+
+    // --- PACKAGING E RICICLO (PPWR) ---
     packaging: [
-      { type: 'Vaso', material: 'Vetro', code: 'GL 70', recycling: 'Vetro', icon: '🫙' },
-      { type: 'Tappo', material: 'Metallo', code: 'FE 40', recycling: 'Metallo', icon: '🥫' }
+      { type: 'Vaso/Barattolo', material: 'Vetro Chiaro', code: 'GL 70', recycling: 'Vetro', icon: '🫙' },
+      { type: 'Tappo', material: 'Composito Plastica/Banda Stagnata', code: 'C/FE 91', recycling: 'Metallo', icon: '🥫' }
     ],
     
+    // --- PRODUTTORE ---
     brandOwner: {
-      name: 'GS1 Italy',
-      streetAddress: 'Via Pietro Paleocapa 7',
-      postalCode: '20121',
-      city: 'Milano',
-      province: 'MI',
+      name: 'Gruppo Fini S.p.A. a socio unico',
+      streetAddress: 'Via Confine, 1583',
+      postalCode: '41017',
+      city: 'Ravarino',
+      province: 'MO',
       countryCode: 'IT',
-      website: 'http://gs1it.org'
+      telephone: '+39 059 900432',
+      website: 'www.leconservedellanonna.it'
     }
   };
 
@@ -80,19 +112,17 @@ export class ProductComponent implements OnInit {
       const scannedBatch = params.get('batch');
       const scannedBestBefore = params.get('bestBefore');
 
-      this.product.gtin = scannedGtin || '08032089000147';
+      if (scannedGtin) this.product.gtin = scannedGtin;
       this.product.batch = scannedBatch || '';
       this.product.bestBefore = scannedBestBefore || '';
 
       this.hasBatch = !!scannedBatch;
       this.hasBestBefore = !!scannedBestBefore;
 
-      // Algoritmo di decodifica Data GS1 (Formato YYMMDD)
       if (this.hasBestBefore && this.product.bestBefore.length === 6) {
         const yy = this.product.bestBefore.substring(0, 2);
         const mm = this.product.bestBefore.substring(2, 4);
         const dd = this.product.bestBefore.substring(4, 6);
-        
         this.product.bestBeforeFormatted = `${dd}/${mm}/20${yy}`;
         this.product.bestBeforeIso = `20${yy}-${mm}-${dd}`;
       } else {
@@ -105,27 +135,21 @@ export class ProductComponent implements OnInit {
   }
 
   private injectJsonLd(): void {
-    // 1. Costruiamo il Digital Link (URI) Canonico
     let canonicalId = `https://id.gs1.org/01/${this.product.gtin}`;
     if (this.hasBatch) canonicalId += `/10/${this.product.batch}`;
     if (this.hasBestBefore) canonicalId += `/17/${this.product.bestBefore}`;
 
-    // 2. Creiamo il JSON-LD in formato "Puro GS1 Web Vocabulary"
     const jsonLd: any = {
       '@context': {
         'gs1': 'http://gs1.org/voc/',
         'xsd': 'http://www.w3.org/2001/XMLSchema#',
-        '@vocab': 'http://gs1.org/voc/' // Rende GS1 il dizionario predefinito per tutte le chiavi
+        '@vocab': 'http://gs1.org/voc/'
       },
       '@id': canonicalId,
-      // Usiamo il tipo specifico per il Largo Consumo alimentare
       '@type': 'FoodBeverageTobaccoProduct', 
-      
       'gtin': this.product.gtin,
-      'productName': [
-        { '@value': this.product.nameIT, '@language': 'it' },
-        { '@value': this.product.nameEN, '@language': 'en' }
-      ],
+      'productName': [{ '@value': this.product.nameIT, '@language': 'it' }],
+      'functionalName': [{ '@value': this.product.functionalName, '@language': 'it' }],
       'image': {
         '@type': 'ReferencedFileDetails',
         'referencedFileURL': { '@id': this.product.imageUrl }
@@ -136,111 +160,54 @@ export class ProductComponent implements OnInit {
       },
       'netWeight': {
         '@type': 'QuantitativeValue',
-        'value': {
-          '@value': this.product.netWeight.toString(),
-          '@type': 'xsd:float'
-        },
+        'value': { '@value': this.product.netWeight, '@type': 'xsd:float' },
         'unitCode': 'GRM'
       },
-      'ingredientStatement': [
-        { '@value': this.product.ingredients, '@language': 'it' }
-      ],
-      'consumerStorageInstructions': [
-        { '@value': this.product.storageInstructions, '@language': 'it' }
-      ],
+      'grossWeight': {
+        '@type': 'QuantitativeValue',
+        'value': { '@value': this.product.grossWeight, '@type': 'xsd:float' },
+        'unitCode': 'GRM'
+      },
+      'inPackageHeight': {
+        '@type': 'QuantitativeValue',
+        'value': { '@value': this.product.dimensions.height, '@type': 'xsd:float' },
+        'unitCode': 'MMT'
+      },
+      'inPackageWidth': {
+        '@type': 'QuantitativeValue',
+        'value': { '@value': this.product.dimensions.width, '@type': 'xsd:float' },
+        'unitCode': 'MMT'
+      },
+      'inPackageDepth': {
+        '@type': 'QuantitativeValue',
+        'value': { '@value': this.product.dimensions.depth, '@type': 'xsd:float' },
+        'unitCode': 'MMT'
+      },
+      'ingredientStatement': [{ '@value': this.product.ingredients, '@language': 'it' }],
+      'consumerStorageInstructions': [{ '@value': this.product.storageInstructions, '@language': 'it' }],
       
-      // === VALORI NUTRIZIONALI (Formato formale GS1) ===
       'nutrientBasisQuantity': {
         '@type': 'QuantitativeValue',
-        'value': { 
-          '@value': '100', 
-          '@type': 'xsd:float' 
-        },
+        'value': { '@value': '100', '@type': 'xsd:float' },
         'unitCode': 'GRM'
       },
       'energyPerNutrientBasis': [
-        {
-          '@type': 'NutritionMeasurementType',
-          'value': { '@value': this.product.nutrition.energyKcal.toString(), '@type': 'xsd:float' },
-          'unitCode': 'E14' // UN/CEFACT per le Kilocalorie
-        },
-        {
-          '@type': 'NutritionMeasurementType',
-          'value': { '@value': this.product.nutrition.energyKJ.toString(), '@type': 'xsd:float' },
-          'unitCode': 'KJO' // UN/CEFACT per i Kilojoule
-        }
+        { '@type': 'NutritionMeasurementType', 'value': { '@value': this.product.nutrition.energyKcal.toString(), '@type': 'xsd:float' }, 'unitCode': 'E14' },
+        { '@type': 'NutritionMeasurementType', 'value': { '@value': this.product.nutrition.energyKJ.toString(), '@type': 'xsd:float' }, 'unitCode': 'KJO' }
       ],
-      'fatPerNutrientBasis': {
-        '@type': 'NutritionMeasurementType',
-        'value': { '@value': this.product.nutrition.fat.toString(), '@type': 'xsd:float' },
-        'unitCode': 'GRM'
-      },
-      'saturatedFatPerNutrientBasis': {
-        '@type': 'NutritionMeasurementType',
-        'value': { '@value': this.product.nutrition.saturatedFat.toString(), '@type': 'xsd:float' },
-        'unitCode': 'GRM'
-      },
-      'carbohydratesPerNutrientBasis': {
-        '@type': 'NutritionMeasurementType',
-        'value': { '@value': this.product.nutrition.carbohydrates.toString(), '@type': 'xsd:float' },
-        'unitCode': 'GRM'
-      },
-      'sugarsPerNutrientBasis': {
-        '@type': 'NutritionMeasurementType',
-        'value': { '@value': this.product.nutrition.sugars.toString(), '@type': 'xsd:float' },
-        'unitCode': 'GRM'
-      },
-      'fibrePerNutrientBasis': {
-        '@type': 'NutritionMeasurementType',
-        'value': { '@value': this.product.nutrition.fiber.toString(), '@type': 'xsd:float' },
-        'unitCode': 'GRM'
-      },
-      'proteinPerNutrientBasis': {
-        '@type': 'NutritionMeasurementType',
-        'value': { '@value': this.product.nutrition.protein.toString(), '@type': 'xsd:float' },
-        'unitCode': 'GRM'
-      },
-      'saltPerNutrientBasis': {
-        '@type': 'NutritionMeasurementType',
-        'value': { '@value': this.product.nutrition.salt.toString(), '@type': 'xsd:float' },
-        'unitCode': 'GRM'
-      },
-
-      // === ECO-RICICLO / PPWR ===
-      'packaging': [
-        {
-          '@type': 'Packaging',
-          'packagingType': 'Jar',
-          'packagingMaterialTypeCode': 'GLASS',
-          'packagingRecyclingProcessType': 'Glass recycling'
-        },
-        {
-          '@type': 'Packaging',
-          'packagingType': 'Cap',
-          'packagingMaterialTypeCode': 'METAL',
-          'packagingRecyclingProcessType': 'Metal recycling'
-        }
-      ]
+      'fatPerNutrientBasis': { '@type': 'NutritionMeasurementType', 'value': { '@value': this.product.nutrition.fat.toString(), '@type': 'xsd:float' }, 'unitCode': 'GRM' },
+      'saturatedFatPerNutrientBasis': { '@type': 'NutritionMeasurementType', 'value': { '@value': this.product.nutrition.saturatedFat.toString(), '@type': 'xsd:float' }, 'unitCode': 'GRM' },
+      'carbohydratesPerNutrientBasis': { '@type': 'NutritionMeasurementType', 'value': { '@value': this.product.nutrition.carbohydrates.toString(), '@type': 'xsd:float' }, 'unitCode': 'GRM' },
+      'sugarsPerNutrientBasis': { '@type': 'NutritionMeasurementType', 'value': { '@value': this.product.nutrition.sugars.toString(), '@type': 'xsd:float' }, 'unitCode': 'GRM' },
+      'proteinPerNutrientBasis': { '@type': 'NutritionMeasurementType', 'value': { '@value': this.product.nutrition.protein.toString(), '@type': 'xsd:float' }, 'unitCode': 'GRM' },
+      'saltPerNutrientBasis': { '@type': 'NutritionMeasurementType', 'value': { '@value': this.product.nutrition.salt.toString(), '@type': 'xsd:float' }, 'unitCode': 'GRM' }
     };
 
-    // 3. Aggiunta dati dinamici del Digital Link (Lotto e Scadenza)
-    if (this.hasBatch) {
-      jsonLd['batchLotNumber'] = this.product.batch;
-    }
-    
-    if (this.hasBestBefore) {
-      // Dichiariamo formale che la data è di tipo ISO (xsd:date) e non una stringa a caso
-      jsonLd['bestBeforeDate'] = {
-        '@value': this.product.bestBeforeIso,
-        '@type': 'xsd:date'
-      };
-    }
+    if (this.hasBatch) jsonLd['batchLotNumber'] = this.product.batch;
+    if (this.hasBestBefore) jsonLd['bestBeforeDate'] = { '@value': this.product.bestBeforeIso, '@type': 'xsd:date' };
 
-    // 4. Iniezione sicura nel DOM
     const existingScript = this.document.head.querySelector('script[type="application/ld+json"]');
-    if (existingScript) {
-      this.renderer.removeChild(this.document.head, existingScript);
-    }
+    if (existingScript) this.renderer.removeChild(this.document.head, existingScript);
 
     const script = this.renderer.createElement('script');
     script.type = 'application/ld+json';
