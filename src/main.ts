@@ -3,7 +3,7 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import { provideRouter, RouterOutlet, Routes } from '@angular/router';
 import { ProductComponent } from './app/product-component/product-component';
 
-const routes: Routes = [
+export const routes: Routes = [
   {
     // Livello 1: Solo Prodotto
     path: '01/:gtin',
