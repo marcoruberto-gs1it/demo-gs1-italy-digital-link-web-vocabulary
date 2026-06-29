@@ -4,17 +4,27 @@ import { provideRouter, RouterOutlet, Routes } from '@angular/router';
 import { ProductComponent } from './app/product-component/product-component';
 
 export const routes: Routes = [
-  { path: '01/:gtin', component: ProductComponent },
-  { path: '01/:gtin/10/:batch', component: ProductComponent },
-  { path: '01/:gtin/10/:batch/17/:bestBefore', component: ProductComponent },
-
-
-  { path: 'demo-gs1-italy-digital-link-web-vocabulary/01/:gtin', component: ProductComponent },
-  { path: 'demo-gs1-italy-digital-link-web-vocabulary/01/:gtin/10/:batch', component: ProductComponent },
-  { path: 'demo-gs1-italy-digital-link-web-vocabulary/01/:gtin/10/:batch/17/:bestBefore', component: ProductComponent },
-
-  // Fallback
-  { path: '**', redirectTo: '01/08032089000147', pathMatch: 'full' },
+  {
+    // Livello 1: Solo Prodotto
+    path: '01/:gtin',
+    component: ProductComponent,
+  },
+  {
+    // Livello 2: Prodotto + Lotto
+    path: '01/:gtin/10/:batch',
+    component: ProductComponent,
+  },
+  {
+    // Livello 3: Prodotto + Lotto + Scadenza
+    path: '01/:gtin/10/:batch/17/:bestBefore',
+    component: ProductComponent,
+  },
+  {
+    // Default fallback se l'URL non è completo
+    path: '**',
+    redirectTo: '01/08032089000147',
+    pathMatch: 'full',
+  },
 ];
 
 @Component({
