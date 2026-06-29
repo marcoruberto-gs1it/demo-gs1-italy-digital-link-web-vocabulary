@@ -120,16 +120,60 @@ export class ProductComponent implements OnInit {
         'gs1:allergenStatement': this.product.allergens.join(' ')
       },
       
-      'schema:nutrition': {
-        '@type': 'schema:NutritionInformation',
-        'schema:calories': `${this.product.nutrition.energyKcal} kcal`,
-        'schema:fatContent': `${this.product.nutrition.fat} g`,
-        'schema:saturatedFatContent': `${this.product.nutrition.saturatedFat} g`,
-        'schema:carbohydrateContent': `${this.product.nutrition.carbohydrates} g`,
-        'schema:sugarContent': `${this.product.nutrition.sugars} g`,
-        'schema:fiberContent': `${this.product.nutrition.fiber} g`,
-        'schema:proteinContent': `${this.product.nutrition.protein} g`,
-        'schema:sodiumContent': `${this.product.nutrition.salt} g`
+      // 1. Dichiariamo la base di calcolo nutrizionale (es. su 100 grammi)
+      'gs1:nutrientBasisQuantity': {
+        '@type': 'gs1:QuantitativeValue',
+        'schema:value': '100',
+        'schema:unitCode': 'GRM'
+      },
+      
+      // 2. Dichiariamo i nutrienti esatti con il GS1 Web Vocabulary
+      'gs1:energyPerNutrientBasis': [
+        {
+          '@type': 'gs1:NutritionMeasurementType',
+          'schema:value': this.product.nutrition.energyKcal,
+          'schema:unitCode': 'E14' // Codice standard UN/CEFACT per Kilocalorie
+        },
+        {
+          '@type': 'gs1:NutritionMeasurementType',
+          'schema:value': this.product.nutrition.energyKJ,
+          'schema:unitCode': 'KJO' // Codice standard UN/CEFACT per Kilojoule
+        }
+      ],
+      'gs1:fatPerNutrientBasis': {
+        '@type': 'gs1:NutritionMeasurementType',
+        'schema:value': this.product.nutrition.fat,
+        'schema:unitCode': 'GRM'
+      },
+      'gs1:saturatedFatPerNutrientBasis': {
+        '@type': 'gs1:NutritionMeasurementType',
+        'schema:value': this.product.nutrition.saturatedFat,
+        'schema:unitCode': 'GRM'
+      },
+      'gs1:carbohydratesPerNutrientBasis': {
+        '@type': 'gs1:NutritionMeasurementType',
+        'schema:value': this.product.nutrition.carbohydrates,
+        'schema:unitCode': 'GRM'
+      },
+      'gs1:sugarsPerNutrientBasis': {
+        '@type': 'gs1:NutritionMeasurementType',
+        'schema:value': this.product.nutrition.sugars,
+        'schema:unitCode': 'GRM'
+      },
+      'gs1:fibrePerNutrientBasis': {
+        '@type': 'gs1:NutritionMeasurementType',
+        'schema:value': this.product.nutrition.fiber,
+        'schema:unitCode': 'GRM'
+      },
+      'gs1:proteinPerNutrientBasis': {
+        '@type': 'gs1:NutritionMeasurementType',
+        'schema:value': this.product.nutrition.protein,
+        'schema:unitCode': 'GRM'
+      },
+      'gs1:saltPerNutrientBasis': {
+        '@type': 'gs1:NutritionMeasurementType',
+        'schema:value': this.product.nutrition.salt,
+        'schema:unitCode': 'GRM'
       },
 
       'gs1:packaging': [
