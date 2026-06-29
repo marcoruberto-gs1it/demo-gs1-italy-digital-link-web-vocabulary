@@ -1,11 +1,18 @@
 import { Component } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideRouter, RouterOutlet, Routes } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
 import { ProductComponent } from './app/product-component/product-component';
+import { ScannerComponent } from './app/scanner-component/scanner-component'; 
 
 export const routes: Routes = [
   {
-    // Livello 1: Solo Prodotto
+    // Pagina iniziale: Mostra la profilazione allergie e attiva la webcam
+    path: '',
+    component: ScannerComponent,
+  },
+  {
+    // Livello 1: Solo Prodotto (Raggiunto dopo lo scan o tramite link diretto)
     path: '01/:gtin',
     component: ProductComponent,
   },
@@ -20,9 +27,9 @@ export const routes: Routes = [
     component: ProductComponent,
   },
   {
-    // Default fallback se l'URL non è completo
+    // Se l'URL è errato, rimanda alla schermata dello scanner per riprovare
     path: '**',
-    redirectTo: '01/8005360007746',
+    redirectTo: '',
     pathMatch: 'full',
   },
 ];
@@ -36,5 +43,8 @@ export const routes: Routes = [
 export class App {}
 
 bootstrapApplication(App, {
-  providers: [provideRouter(routes)],
+  providers: [
+    provideRouter(routes),
+    provideHttpClient() // <--- Abilita le chiamate HTTP necessarie per i componenti
+  ],
 });

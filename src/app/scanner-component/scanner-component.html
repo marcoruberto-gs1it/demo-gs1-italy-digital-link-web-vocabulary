@@ -1,0 +1,82 @@
+<div class="min-h-screen bg-gs1-lightgray flex items-center justify-center p-4 font-sans text-gs1-darkgray">
+    <div class="w-full max-w-lg bg-white rounded-[2rem] shadow-2xl overflow-hidden border border-gs1-lightgray p-6 md:p-8">
+      
+      @if (currentStep === 'profile') {
+        <div class="text-center space-y-6 py-4">
+          <div class="w-16 h-16 bg-gs1-blue/10 text-gs1-blue rounded-full flex items-center justify-center mx-auto text-2xl">👤</div>
+          <div>
+            <h2 class="text-xl font-black text-gs1-blue tracking-tight">Configura il tuo Profilo</h2>
+            <p class="text-xs text-gs1-mediumdark mt-1 font-medium">Seleziona le tue preferenze prima di inquadrare il prodotto</p>
+          </div>
+          
+          <p class="text-sm font-semibold text-gs1-darkgray bg-gs1-lightgray/40 p-4 rounded-xl border border-gs1-lightgray">
+            Sei allergico o intollerante alla <span class="text-gs1-peach font-black">Frutta a guscio</span>?
+          </p>
+          
+          <div class="grid grid-cols-2 gap-4 pt-2">
+            <button (click)="setAllergyProfile(true)" class="bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase tracking-wider py-4 px-6 rounded-2xl shadow-md transition-all active:scale-95">
+              🔴 SÌ, sono allergico
+            </button>
+            <button (click)="setAllergyProfile(false)" class="bg-gs1-forest hover:bg-gs1-forest/90 text-white font-black text-xs uppercase tracking-wider py-4 px-6 rounded-2xl shadow-md transition-all active:scale-95">
+              🟢 NO, nessuna allergia
+            </button>
+          </div>
+        </div>
+      }
+  
+      @if (currentStep === 'scanning') {
+        <div class="space-y-4">
+          <div class="flex items-center justify-between border-b border-gs1-lightgray pb-3">
+            <h3 class="text-xs font-black uppercase tracking-widest text-gs1-blue flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-red-600 animate-pulse"></span>
+              Inquadra il Codice del Prodotto
+            </h3>
+            <span class="text-[10px] font-bold bg-gs1-lightgray px-2 py-1 rounded-md text-gs1-mediumdark">
+              {{ isAllergicUser ? 'Profilo con allergie ⚠️' : 'Nessuna restrizione ✅' }}
+            </span>
+          </div>
+  
+          <div class="relative rounded-2xl overflow-hidden bg-black aspect-square border-2 border-gs1-blue/30 shadow-inner">
+            <zxing-scanner (scanSuccess)="onCodeResult($event)"></zxing-scanner>
+            
+            <div class="absolute inset-0 border-[3rem] border-black/40 flex items-center justify-center pointer-events-none">
+              <div class="w-full h-full border-2 border-dashed border-gs1-orange relative">
+                <div class="absolute inset-x-0 top-1/2 h-0.5 bg-gs1-orange/80 shadow-[0_0_8px_#F26A36] animate-scan-line"></div>
+              </div>
+            </div>
+          </div>
+          
+          <button (click)="resetDemo()" class="w-full text-center text-xs font-bold text-gs1-mediumdark hover:text-gs1-blue transition-colors pt-2">
+            ← Torna indietro e cambia profilo
+          </button>
+        </div>
+      }
+  
+      @if (currentStep === 'result') {
+        <div class="space-y-6 py-2">
+          
+          @if (allergyAlertTriggered) {
+            <div class="text-center space-y-4 p-4 bg-red-50 rounded-2xl border-2 border-red-200">
+              <div class="w-14 h-14 bg-red-600 text-white rounded-full flex items-center justify-center mx-auto text-xl shadow-md">🚨</div>
+              <div>
+                <h3 class="text-lg font-black text-red-600 uppercase tracking-tight">Prodotto non sicuro per te</h3>
+                <p class="text-xs text-gs1-darkgray font-semibold mt-1 leading-relaxed">
+                  Il sistema di sicurezza ha rilevato un rischio per la tua salute in base alle preferenze del tuo profilo.
+                </p>
+              </div>
+              <div class="bg-red-600 text-white p-4 rounded-xl text-xs font-bold text-left leading-relaxed">
+                ⚠️ ATTENZIONE: Questo prodotto è stato realizzato in uno stabilimento che utilizza <strong class="underline font-black">{{ allergenToWatch }}</strong>. Ne è sconsigliato il consumo per evitare potenziali reazioni allergiche.
+              </div>
+            </div>
+          }
+  
+          <div class="pt-2">
+            <button (click)="resetDemo()" class="w-full bg-gs1-lightgray hover:bg-gs1-lightgray/80 text-gs1-darkgray font-bold text-xs uppercase tracking-wider py-3 px-6 rounded-xl transition-all border border-gs1-lightgray">
+              🔄 Aggiorna profilo e scansiona di nuovo
+            </button>
+          </div>
+        </div>
+      }
+  
+    </div>
+  </div>
