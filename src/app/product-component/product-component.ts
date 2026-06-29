@@ -105,125 +105,142 @@ export class ProductComponent implements OnInit {
   }
 
   private injectJsonLd(): void {
+    // 1. Costruiamo il Digital Link (URI) Canonico
     let canonicalId = `https://id.gs1.org/01/${this.product.gtin}`;
     if (this.hasBatch) canonicalId += `/10/${this.product.batch}`;
     if (this.hasBestBefore) canonicalId += `/17/${this.product.bestBefore}`;
 
+    // 2. Creiamo il JSON-LD in formato "Puro GS1 Web Vocabulary"
     const jsonLd: any = {
-      '@context': ['https://schema.org/', { gs1: 'https://gs1.org/voc/' }],
+      '@context': {
+        'gs1': 'http://gs1.org/voc/',
+        'xsd': 'http://www.w3.org/2001/XMLSchema#',
+        '@vocab': 'http://gs1.org/voc/' // Rende GS1 il dizionario predefinito per tutte le chiavi
+      },
       '@id': canonicalId,
-      '@type': ['Product', 'gs1:FoodAndBeverage'],
-      'gs1:gtin': this.product.gtin,
-      'gs1:productName': [
+      // Usiamo il tipo specifico per il Largo Consumo alimentare
+      '@type': 'FoodBeverageTobaccoProduct', 
+      
+      'gtin': this.product.gtin,
+      'productName': [
         { '@value': this.product.nameIT, '@language': 'it' },
         { '@value': this.product.nameEN, '@language': 'en' }
       ],
-      'schema:image': this.product.imageUrl,
-      'gs1:gpcCategoryCode': this.product.gpcCode,
-      'gs1:netContent': {
-        '@type': 'gs1:QuantitativeValue',
-        'schema:value': this.product.netWeight,
-        'schema:unitCode': 'GRM',
+      'image': {
+        '@type': 'ReferencedFileDetails',
+        'referencedFileURL': { '@id': this.product.imageUrl }
       },
-      'gs1:ingredientStatement': this.product.ingredients,
-      'gs1:consumerStorageInstructions': this.product.storageInstructions,
+      'brandOwner': {
+        '@type': 'Organization',
+        'organizationName': this.product.brandOwner.name
+      },
+      'netWeight': {
+        '@type': 'QuantitativeValue',
+        'value': {
+          '@value': this.product.netWeight.toString(),
+          '@type': 'xsd:float'
+        },
+        'unitCode': 'GRM'
+      },
+      'ingredientStatement': [
+        { '@value': this.product.ingredients, '@language': 'it' }
+      ],
+      'consumerStorageInstructions': [
+        { '@value': this.product.storageInstructions, '@language': 'it' }
+      ],
       
-      'gs1:allergenInfo': {
-        '@type': 'gs1:AllergenDetails',
-        'gs1:allergenStatement': this.product.allergens.join(' ')
+      // === VALORI NUTRIZIONALI (Formato formale GS1) ===
+      'nutrientBasisQuantity': {
+        '@type': 'QuantitativeValue',
+        'value': { 
+          '@value': '100', 
+          '@type': 'xsd:float' 
+        },
+        'unitCode': 'GRM'
       },
-      
-      // Struttura a norma GS1 Web Vocabulary per i valori nutrizionali
-      'gs1:nutrientBasisQuantity': {
-        '@type': 'gs1:QuantitativeValue',
-        'schema:value': '100',
-        'schema:unitCode': 'GRM'
-      },
-      'gs1:energyPerNutrientBasis': [
+      'energyPerNutrientBasis': [
         {
-          '@type': 'gs1:NutritionMeasurementType',
-          'schema:value': this.product.nutrition.energyKcal,
-          'schema:unitCode': 'E14' // Kilocalorie
+          '@type': 'NutritionMeasurementType',
+          'value': { '@value': this.product.nutrition.energyKcal.toString(), '@type': 'xsd:float' },
+          'unitCode': 'E14' // UN/CEFACT per le Kilocalorie
         },
         {
-          '@type': 'gs1:NutritionMeasurementType',
-          'schema:value': this.product.nutrition.energyKJ,
-          'schema:unitCode': 'KJO' // Kilojoule
+          '@type': 'NutritionMeasurementType',
+          'value': { '@value': this.product.nutrition.energyKJ.toString(), '@type': 'xsd:float' },
+          'unitCode': 'KJO' // UN/CEFACT per i Kilojoule
         }
       ],
-      'gs1:fatPerNutrientBasis': {
-        '@type': 'gs1:NutritionMeasurementType',
-        'schema:value': this.product.nutrition.fat,
-        'schema:unitCode': 'GRM'
+      'fatPerNutrientBasis': {
+        '@type': 'NutritionMeasurementType',
+        'value': { '@value': this.product.nutrition.fat.toString(), '@type': 'xsd:float' },
+        'unitCode': 'GRM'
       },
-      'gs1:saturatedFatPerNutrientBasis': {
-        '@type': 'gs1:NutritionMeasurementType',
-        'schema:value': this.product.nutrition.saturatedFat,
-        'schema:unitCode': 'GRM'
+      'saturatedFatPerNutrientBasis': {
+        '@type': 'NutritionMeasurementType',
+        'value': { '@value': this.product.nutrition.saturatedFat.toString(), '@type': 'xsd:float' },
+        'unitCode': 'GRM'
       },
-      'gs1:carbohydratesPerNutrientBasis': {
-        '@type': 'gs1:NutritionMeasurementType',
-        'schema:value': this.product.nutrition.carbohydrates,
-        'schema:unitCode': 'GRM'
+      'carbohydratesPerNutrientBasis': {
+        '@type': 'NutritionMeasurementType',
+        'value': { '@value': this.product.nutrition.carbohydrates.toString(), '@type': 'xsd:float' },
+        'unitCode': 'GRM'
       },
-      'gs1:sugarsPerNutrientBasis': {
-        '@type': 'gs1:NutritionMeasurementType',
-        'schema:value': this.product.nutrition.sugars,
-        'schema:unitCode': 'GRM'
+      'sugarsPerNutrientBasis': {
+        '@type': 'NutritionMeasurementType',
+        'value': { '@value': this.product.nutrition.sugars.toString(), '@type': 'xsd:float' },
+        'unitCode': 'GRM'
       },
-      'gs1:fibrePerNutrientBasis': {
-        '@type': 'gs1:NutritionMeasurementType',
-        'schema:value': this.product.nutrition.fiber,
-        'schema:unitCode': 'GRM'
+      'fibrePerNutrientBasis': {
+        '@type': 'NutritionMeasurementType',
+        'value': { '@value': this.product.nutrition.fiber.toString(), '@type': 'xsd:float' },
+        'unitCode': 'GRM'
       },
-      'gs1:proteinPerNutrientBasis': {
-        '@type': 'gs1:NutritionMeasurementType',
-        'schema:value': this.product.nutrition.protein,
-        'schema:unitCode': 'GRM'
+      'proteinPerNutrientBasis': {
+        '@type': 'NutritionMeasurementType',
+        'value': { '@value': this.product.nutrition.protein.toString(), '@type': 'xsd:float' },
+        'unitCode': 'GRM'
       },
-      'gs1:saltPerNutrientBasis': {
-        '@type': 'gs1:NutritionMeasurementType',
-        'schema:value': this.product.nutrition.salt,
-        'schema:unitCode': 'GRM'
+      'saltPerNutrientBasis': {
+        '@type': 'NutritionMeasurementType',
+        'value': { '@value': this.product.nutrition.salt.toString(), '@type': 'xsd:float' },
+        'unitCode': 'GRM'
       },
 
-      'gs1:packaging': [
+      // === ECO-RICICLO / PPWR ===
+      'packaging': [
         {
-          '@type': 'gs1:Packaging',
-          'gs1:packagingType': 'Jar',
-          'gs1:packagingMaterialTypeCode': 'GLASS',
-          'gs1:packagingRecyclingProcessType': 'Glass recycling'
+          '@type': 'Packaging',
+          'packagingType': 'Jar',
+          'packagingMaterialTypeCode': 'GLASS',
+          'packagingRecyclingProcessType': 'Glass recycling'
         },
         {
-          '@type': 'gs1:Packaging',
-          'gs1:packagingType': 'Cap',
-          'gs1:packagingMaterialTypeCode': 'METAL',
-          'gs1:packagingRecyclingProcessType': 'Metal recycling'
+          '@type': 'Packaging',
+          'packagingType': 'Cap',
+          'packagingMaterialTypeCode': 'METAL',
+          'packagingRecyclingProcessType': 'Metal recycling'
         }
-      ],
-      'gs1:brandOwner': {
-        '@type': 'gs1:Organization',
-        'gs1:organizationName': this.product.brandOwner.name,
-        'schema:url': this.product.brandOwner.website,
-        'gs1:address': {
-          '@type': 'gs1:PostalAddress',
-          'gs1:streetAddress': this.product.brandOwner.streetAddress,
-          'gs1:postalCode': this.product.brandOwner.postalCode,
-          'gs1:addressLocality': this.product.brandOwner.city,
-          'gs1:addressRegion': this.product.brandOwner.province,
-          'gs1:addressCountry': {
-            '@type': 'gs1:Country',
-            'gs1:countryCode': this.product.brandOwner.countryCode
-          }
-        }
-      }
+      ]
     };
 
-    if (this.hasBatch) jsonLd['gs1:batchLotNumber'] = this.product.batch;
-    if (this.hasBestBefore) jsonLd['gs1:bestBeforeDate'] = this.product.bestBeforeIso;
+    // 3. Aggiunta dati dinamici del Digital Link (Lotto e Scadenza)
+    if (this.hasBatch) {
+      jsonLd['batchLotNumber'] = this.product.batch;
+    }
+    
+    if (this.hasBestBefore) {
+      // Dichiariamo formale che la data è di tipo ISO (xsd:date) e non una stringa a caso
+      jsonLd['bestBeforeDate'] = {
+        '@value': this.product.bestBeforeIso,
+        '@type': 'xsd:date'
+      };
+    }
 
+    // 4. Iniezione sicura nel DOM
     const existingScript = this.document.head.querySelector('script[type="application/ld+json"]');
-    if (existingScript) this.renderer.removeChild(this.document.head, existingScript);
+    if (existingScript) {
+      this.renderer.removeChild(this.document.head, existingScript);
+    }
 
     const script = this.renderer.createElement('script');
     script.type = 'application/ld+json';
