@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ZXingScannerModule } from '@zxing/ngx-scanner';
 import { HttpClientModule } from '@angular/common/http';
@@ -18,16 +18,11 @@ export class ScannerComponent implements OnInit {
   allergyAlertTriggered = false;
   allergenToWatch = 'Frutta a guscio';
 
-  // Elenco delle telecamere da mostrare nel menu a tendina
   availableDevices: MediaDeviceInfo[] = [];
   currentDevice: MediaDeviceInfo | undefined = undefined;
 
-  videoConstraints: MediaTrackConstraints = {
-    width: { ideal: 1280 },
-    height: { ideal: 720 }
-  };
-
-  constructor(private router: Router) {}
+  // ChangeDetectorRef ci assicura che l'HTML si aggiorni appena diamo il permesso su iOS
+  constructor(private router: Router, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {}
 
@@ -36,16 +31,25 @@ export class ScannerComponent implements OnInit {
     this.currentStep = 'scanning';
   }
 
-  // Cattura tutte le lenti disponibili e imposta la prima come predefinita
+  // Si attiva non appena l'utente clicca "Consenti" per la fotocamera
   onCamerasFound(devices: MediaDeviceInfo[]) {
     this.availableDevices = devices;
-    if (devices.length > 0) {
-      // Seleziona la prima disponibile (se l'iPhone parte in 5x, l'utente potrà cambiarla)
-      this.currentDevice = devices[0];
+    
+    if (devices && devices.length > 0) {
+      // Tenta di auto-selezionare una fotocamera posteriore standard di default
+      const backCam = devices.find(d => 
+        (d.label.toLowerCase().includes('back') || d.label.toLowerCase().includes('posteriore')) &&
+        !d.label.toLowerCase().includes('tele') && 
+        !d.label.toLowerCase().includes('ultra')
+      );
+      
+      this.currentDevice = backCam || devices[0];
     }
+    
+    // FORZA l'aggiornamento della pagina per far apparire il menu a tendina!
+    this.cdr.detectChanges();
   }
 
-  // FUNZIONE NUOVA: Gestisce il cambio manuale della telecamera dal menu a tendina
   onDeviceSelectChange(event: Event) {
     const selectedDeviceId = (event.target as HTMLSelectElement).value;
     const device = this.availableDevices.find(d => d.deviceId === selectedDeviceId);
@@ -90,7 +94,5 @@ export class ScannerComponent implements OnInit {
     this.isAllergicUser = null;
     this.scannedUrl = '';
     this.allergyAlertTriggered = false;
-    this.currentDevice = undefined;
-    this.availableDevices = [];
   }
 }

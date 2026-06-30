@@ -29,7 +29,7 @@
           <div class="flex items-center justify-between border-b border-gs1-lightgray pb-3">
             <h3 class="text-xs font-black uppercase tracking-widest text-gs1-blue flex items-center gap-2">
               <span class="w-2 h-2 rounded-full bg-red-600 animate-pulse"></span>
-              Inquadra il Codice del Prodotto
+              Inquadra il Codice
             </h3>
             <span class="text-[10px] font-bold bg-gs1-lightgray px-2 py-1 rounded-md text-gs1-mediumdark">
               {{ isAllergicUser ? 'Profilo con allergie ⚠️' : 'Nessuna restrizione ✅' }}
@@ -39,7 +39,6 @@
           <div class="relative rounded-2xl overflow-hidden bg-black aspect-square border-2 border-gs1-blue/30 shadow-inner">
             <zxing-scanner 
               [device]="currentDevice"
-              [videoConstraints]="videoConstraints"
               (camerasFound)="onCamerasFound($event)"
               (scanSuccess)="onCodeResult($event)">
             </zxing-scanner>
@@ -51,7 +50,7 @@
             </div>
           </div>
   
-          @if (availableDevices.length > 1) {
+          @if (availableDevices.length > 0) {
             <div class="space-y-1">
               <label for="cameraSelect" class="block text-[10px] font-black uppercase tracking-wider text-gs1-mediumdark">
                 📷 Cambia obiettivo fotocamera:
