@@ -36,7 +36,6 @@
             </span>
           </div>
   
-
           <div class="relative rounded-2xl overflow-hidden bg-black aspect-square border-2 border-gs1-blue/30 shadow-inner">
             <zxing-scanner 
               [device]="currentDevice"
@@ -51,6 +50,24 @@
               </div>
             </div>
           </div>
+  
+          @if (availableDevices.length > 1) {
+            <div class="space-y-1">
+              <label for="cameraSelect" class="block text-[10px] font-black uppercase tracking-wider text-gs1-mediumdark">
+                📷 Cambia obiettivo fotocamera:
+              </label>
+              <select 
+                id="cameraSelect" 
+                (change)="onDeviceSelectChange($event)" 
+                class="w-full bg-gs1-lightgray/50 border border-gs1-lightgray rounded-xl p-2.5 text-xs font-bold text-gs1-darkgray focus:outline-none focus:border-gs1-blue transition-colors cursor-pointer">
+                @for (device of availableDevices; track device.deviceId; let i = $index) {
+                  <option [value]="device.deviceId" [selected]="device.deviceId === currentDevice?.deviceId">
+                    {{ device.label || 'Obiettivo Fotocamera ' + (i + 1) }}
+                  </option>
+                }
+              </select>
+            </div>
+          }
           
           <button (click)="resetDemo()" class="w-full text-center text-xs font-bold text-gs1-mediumdark hover:text-gs1-blue transition-colors pt-2">
             ← Torna indietro e cambia profilo
@@ -77,7 +94,7 @@
           }
   
           <div class="pt-2">
-            <button (click)="resetDemo()" class="w-full bg-gs1-lightgray hover:bg-gs1-lightgray/80 text-gs1-darkgray font-bold text-xs uppercase tracking-wider py-3 px-6 rounded-xl transition-all border border-gs1-lightgray">
+            <button (click)="resetDemo()" class="w-full bg-gs1-lightgray hover:bg-gs1-lightgray/80 text-gs1-darkgray font-bold text-xs uppercase tracking-wider py-3 px-6 rounded-xl transition-all border border-gs1-lightgray shadow-sm">
               🔄 Aggiorna profilo e scansiona di nuovo
             </button>
           </div>

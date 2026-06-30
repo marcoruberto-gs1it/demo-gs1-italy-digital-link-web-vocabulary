@@ -18,11 +18,10 @@ export class ScannerComponent implements OnInit {
   allergyAlertTriggered = false;
   allergenToWatch = 'Frutta a guscio';
 
-  // Gestione dinamica della lente corretta 1x
+  // Elenco delle telecamere da mostrare nel menu a tendina
   availableDevices: MediaDeviceInfo[] = [];
   currentDevice: MediaDeviceInfo | undefined = undefined;
 
-  // Riduciamo i vincoli generici per lasciare che la libreria usi il device ID specifico che sceglieremo
   videoConstraints: MediaTrackConstraints = {
     width: { ideal: 1280 },
     height: { ideal: 720 }
@@ -37,36 +36,21 @@ export class ScannerComponent implements OnInit {
     this.currentStep = 'scanning';
   }
 
-  // FUNZIONE CHIAVE: Viene chiamata automaticamente quando la libreria rileva le fotocamere dell'iPhone
+  // Cattura tutte le lenti disponibili e imposta la prima come predefinita
   onCamerasFound(devices: MediaDeviceInfo[]) {
     this.availableDevices = devices;
-    
-    // Log di debug visibile in console per mappare i nomi delle lenti su iOS
-    console.log('Fotocamere rilevate su questo dispositivo:', devices);
-
     if (devices.length > 0) {
-      // Cerchiamo la lente posteriore principale (1x)
-      // Su iOS la camera principale si chiama spesso "Fotocamera posteriore" o contiene "Back Camera"
-      // Evitiamo le lenti Ultra-Wide (grandangolo) o Telephoto (3x/5x) se il sistema le isola
-      const backCameras = devices.filter(device => 
-        device.label.toLowerCase().includes('back') || 
-        device.label.toLowerCase().includes('posteriore')
-      );
+      // Seleziona la prima disponibile (se l'iPhone parte in 5x, l'utente potrà cambiarla)
+      this.currentDevice = devices[0];
+    }
+  }
 
-      if (backCameras.length > 0) {
-        // Di solito, la prima della lista delle posteriori è la principale 1x.
-        // Se ci sono lenti specifiche "tele" o "zoom" nelle posizioni successive, le scartiamo.
-        const primaryLens = backCameras.find(cam => 
-          !cam.label.toLowerCase().includes('tele') && 
-          !cam.label.toLowerCase().includes('zoom') &&
-          !cam.label.toLowerCase().includes('ultra')
-        );
-
-        this.currentDevice = primaryLens || backCameras[0];
-      } else {
-        // Fallback se i nomi delle etichette sono vuoti (es. per motivi di privacy prima del permesso)
-        this.currentDevice = devices[0];
-      }
+  // FUNZIONE NUOVA: Gestisce il cambio manuale della telecamera dal menu a tendina
+  onDeviceSelectChange(event: Event) {
+    const selectedDeviceId = (event.target as HTMLSelectElement).value;
+    const device = this.availableDevices.find(d => d.deviceId === selectedDeviceId);
+    if (device) {
+      this.currentDevice = device;
     }
   }
 
@@ -107,5 +91,6 @@ export class ScannerComponent implements OnInit {
     this.scannedUrl = '';
     this.allergyAlertTriggered = false;
     this.currentDevice = undefined;
+    this.availableDevices = [];
   }
 }
