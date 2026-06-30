@@ -12,41 +12,67 @@ import { Router } from '@angular/router';
 })
 export class ScannerComponent implements OnInit {
   currentStep: 'profile' | 'scanning' | 'result' = 'profile';
-  isAllergicUser: boolean | null = null;
+  
+  // Array dinamico degli allergeni selezionati dall'utente nel diario alimentare
+  selectedAllergens: string[] = [];
+  triggeredAllergens: string[] = []; // Tiene traccia di quali allergeni hanno bloccato il prodotto
   
   scannedUrl: string = '';
   allergyAlertTriggered = false;
-  allergenToWatch = 'Frutta a guscio';
+
+  // L'elenco completo degli allergeni di legge configurabile nella dieta
+  allergensGrid = [
+    { name: 'Latte', icon: '🥛' },
+    { name: 'Glutine', icon: '🌾' },
+    { name: 'Frutta a guscio', icon: '🌰' },
+    { name: 'Arachidi', icon: '🥜' },
+    { name: 'Pesce', icon: '🐟' },
+    { name: 'Crostacei', icon: '🦀' },
+    { name: 'Uova', icon: '🥚' },
+    { name: 'Soia', icon: '🫛' },
+    { name: 'Sesamo', icon: '🫘' },
+    { name: 'Senape', icon: '🏺' },
+    { name: 'Lupini', icon: '🟡' },
+    { name: 'Molluschi', icon: '🐚' }
+  ];
 
   availableDevices: MediaDeviceInfo[] = [];
   currentDevice: MediaDeviceInfo | undefined = undefined;
 
-  // ChangeDetectorRef ci assicura che l'HTML si aggiorni appena diamo il permesso su iOS
   constructor(private router: Router, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {}
 
-  setAllergyProfile(isAllergic: boolean) {
-    this.isAllergicUser = isAllergic;
+  // Attiva/Disattiva l'allergene al click sulla card
+  toggleAllergen(allergenName: string) {
+    const index = this.selectedAllergens.indexOf(allergenName);
+    if (index > -1) {
+      this.selectedAllergens.splice(index, 1); // Rimuove se già presente
+    } else {
+      this.selectedAllergens.push(allergenName); // Aggiunge se non presente
+    }
+  }
+
+  // Verifica se l'allergene è correntemente selezionato per applicare le classi CSS
+  isAllergenSelected(allergenName: string): boolean {
+    return this.selectedAllergens.includes(allergenName);
+  }
+
+  // Conferma la dieta e passa alla fotocamera
+  saveDietProfile() {
     this.currentStep = 'scanning';
   }
 
-  // Si attiva non appena l'utente clicca "Consenti" per la fotocamera
   onCamerasFound(devices: MediaDeviceInfo[]) {
     this.availableDevices = devices;
-    
     if (devices && devices.length > 0) {
-      // Tenta di auto-selezionare una fotocamera posteriore standard di default
       const backCam = devices.find(d => 
         (d.label.toLowerCase().includes('back') || d.label.toLowerCase().includes('posteriore')) &&
         !d.label.toLowerCase().includes('tele') && 
         !d.label.toLowerCase().includes('ultra')
       );
-      
       this.currentDevice = backCam || devices[0];
     }
-    
-    // FORZA l'aggiornamento della pagina per far apparire il menu a tendina!
     this.cdr.detectChanges();
   }
 
@@ -60,12 +86,19 @@ export class ScannerComponent implements OnInit {
 
   onCodeResult(resultString: string) {
     this.scannedUrl = resultString;
+    
+    // Lista reale di fabbrica del prodotto ("Le Conserve della Nonna")
     const productAllergens = ['Sedano', 'Pesce', 'Latte', 'Molluschi', 'Soia', 'Frutta a guscio'];
 
-    if (this.isAllergicUser && productAllergens.includes(this.allergenToWatch)) {
+    // Intersezione: verifichiamo se l'utente ha selezionato almeno uno degli allergeni a rischio del prodotto
+    this.triggeredAllergens = productAllergens.filter(allergen => this.selectedAllergens.includes(allergen));
+
+    if (this.triggeredAllergens.length > 0) {
+      // Trovata corrispondenza di pericolo! Blocca l'utente sulla schermata rossa
       this.currentStep = 'result';
       this.allergyAlertTriggered = true;
     } else {
+      // Nessun pericolo: redirect immediato alle rotte del prodotto
       this.allergyAlertTriggered = false;
       this.navigateToProductRoute(resultString);
     }
@@ -91,8 +124,9 @@ export class ScannerComponent implements OnInit {
 
   resetDemo() {
     this.currentStep = 'profile';
-    this.isAllergicUser = null;
     this.scannedUrl = '';
     this.allergyAlertTriggered = false;
+    this.triggeredAllergens = [];
+    // Lasciamo memorizzati gli allergeni per consentire modifiche rapide senza resettare tutto
   }
 }

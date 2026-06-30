@@ -1,104 +1,156 @@
-<div class="min-h-screen bg-gs1-lightgray flex items-center justify-center p-4 font-sans text-gs1-darkgray">
-    <div class="w-full max-w-lg bg-white rounded-[2rem] shadow-2xl overflow-hidden border border-gs1-lightgray p-6 md:p-8">
+<div class="min-h-screen bg-gradient-to-b from-gs1-lightgray/40 to-gs1-lightgray flex items-center justify-center p-4 font-sans text-gs1-darkgray">
+    <div class="w-full max-w-md bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-gs1-lightgray flex flex-col h-[850px] max-h-[95vh]">
       
-      @if (currentStep === 'profile') {
-        <div class="text-center space-y-6 py-4">
-          <div class="w-16 h-16 bg-gs1-blue/10 text-gs1-blue rounded-full flex items-center justify-center mx-auto text-2xl">👤</div>
-          <div>
-            <h2 class="text-xl font-black text-gs1-blue tracking-tight">Configura il tuo Profilo</h2>
-            <p class="text-xs text-gs1-mediumdark mt-1 font-medium">Seleziona le tue preferenze prima di inquadrare il prodotto</p>
-          </div>
-          
-          <p class="text-sm font-semibold text-gs1-darkgray bg-gs1-lightgray/40 p-4 rounded-xl border border-gs1-lightgray">
-            Sei allergico o intollerante alla <span class="text-gs1-peach font-black">Frutta a guscio</span>?
-          </p>
-          
-          <div class="grid grid-cols-2 gap-4 pt-2">
-            <button (click)="setAllergyProfile(true)" class="bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase tracking-wider py-4 px-6 rounded-2xl shadow-md transition-all active:scale-95">
-              🔴 SÌ, sono allergico
-            </button>
-            <button (click)="setAllergyProfile(false)" class="bg-gs1-forest hover:bg-gs1-forest/90 text-white font-black text-xs uppercase tracking-wider py-4 px-6 rounded-2xl shadow-md transition-all active:scale-95">
-              🟢 NO, nessuna allergia
-            </button>
-          </div>
+      <header class="px-6 pt-6 pb-4 flex items-center justify-between border-b border-gs1-lightgray/40 shrink-0">
+        <button *if="currentStep !== 'profile'" (click)="resetDemo()" class="text-xs font-bold text-gs1-mediumdark flex items-center gap-1 hover:text-gs1-blue transition-colors">
+          ‹ INDIETRO
+        </button>
+        <div *if="currentStep === 'profile'" class="w-4 h-4"></div>
+        
+        <div class="flex items-center gap-1.5 font-black text-sm text-gs1-blue tracking-tight">
+          <span class="text-lg">🥗</span> NutriScan <span class="text-gs1-forest font-bold">Diet</span>
         </div>
-      }
+        <div class="w-6 h-6 rounded-full bg-gs1-lightgray flex items-center justify-center text-xs">⚙️</div>
+      </header>
   
-      @if (currentStep === 'scanning') {
-        <div class="space-y-4">
-          <div class="flex items-center justify-between border-b border-gs1-lightgray pb-3">
-            <h3 class="text-xs font-black uppercase tracking-widest text-gs1-blue flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-red-600 animate-pulse"></span>
-              Inquadra il Codice
-            </h3>
-            <span class="text-[10px] font-bold bg-gs1-lightgray px-2 py-1 rounded-md text-gs1-mediumdark">
-              {{ isAllergicUser ? 'Profilo con allergie ⚠️' : 'Nessuna restrizione ✅' }}
-            </span>
-          </div>
+      <div class="p-6 overflow-y-auto flex-1 custom-scrollbar space-y-6">
   
-          <div class="relative rounded-2xl overflow-hidden bg-black aspect-square border-2 border-gs1-blue/30 shadow-inner">
-            <zxing-scanner 
-              [device]="currentDevice"
-              (camerasFound)="onCamerasFound($event)"
-              (scanSuccess)="onCodeResult($event)">
-            </zxing-scanner>
+        @if (currentStep === 'profile') {
+          <div class="space-y-5 animate-fade-in">
+            <div class="text-center space-y-1">
+              <h2 class="text-xl font-black text-gs1-blue tracking-tight uppercase">Indica le tue allergie & intolleranze</h2>
+              <p class="text-xs text-gs1-mediumdark font-semibold">Seleziona gli allergeni comuni per personalizzare la tua dieta.</p>
+            </div>
+  
+            <div class="grid grid-cols-3 gap-3">
+              @for (all of allergensGrid; track all.name) {
+                <button 
+                  (click)="toggleAllergen(all.name)"
+                  [ngClass]="{
+                    'border-gs1-forest bg-gs1-forest/5 shadow-md': isAllergenSelected(all.name),
+                    'border-gs1-lightgray hover:border-gs1-mediumdark/40 bg-white': !isAllergenSelected(all.name)
+                  }"
+                  class="border-2 rounded-2xl p-3 flex flex-col items-center justify-center relative transition-all duration-200 active:scale-95 group aspect-square">
+                  
+                  @if (isAllergenSelected(all.name)) {
+                    <span class="absolute top-1.5 right-1.5 w-3.5 h-3.5 bg-gs1-forest text-white rounded-full flex items-center justify-center text-[8px] font-bold">✓</span>
+                  }
+                  
+                  <span class="text-2xl mb-1.5 group-hover:scale-110 transition-transform">{{ all.icon }}</span>
+                  <span class="text-[10px] font-black uppercase tracking-tight text-center leading-tight">
+                    {{ all.name }}
+                  </span>
+                </button>
+              }
+            </div>
+  
+            <div class="relative pt-1">
+              <span class="absolute inset-y-0 left-3.5 flex items-center pointer-events-none text-xs text-gs1-mediumdark">🔍</span>
+              <input 
+                type="text" 
+                placeholder="Cerca altri allergeni o ingredienti..." 
+                disabled
+                class="w-full bg-gs1-lightgray/40 border border-gs1-lightgray/80 rounded-xl py-2.5 pl-9 pr-4 text-xs font-medium text-gs1-mediumdark cursor-not-allowed opacity-70">
+            </div>
             
-            <div class="absolute inset-0 border-[3rem] border-black/40 flex items-center justify-center pointer-events-none">
-              <div class="w-full h-full border-2 border-dashed border-gs1-orange relative">
-                <div class="absolute inset-x-0 top-1/2 h-0.5 bg-gs1-orange/80 shadow-[0_0_8px_#F26A36] animate-scan-line"></div>
-              </div>
-            </div>
+            <p class="text-[11px] text-center text-gs1-mediumdark font-semibold leading-relaxed px-4">
+              Le tue scelte aiuteranno a filtrare istantaneamente i prodotti e i consigli nutrizionali durante la spesa.
+            </p>
           </div>
+        }
   
-          @if (availableDevices.length > 0) {
-            <div class="space-y-1">
-              <label for="cameraSelect" class="block text-[10px] font-black uppercase tracking-wider text-gs1-mediumdark">
-                📷 Cambia obiettivo fotocamera:
-              </label>
-              <select 
-                id="cameraSelect" 
-                (change)="onDeviceSelectChange($event)" 
-                class="w-full bg-gs1-lightgray/50 border border-gs1-lightgray rounded-xl p-2.5 text-xs font-bold text-gs1-darkgray focus:outline-none focus:border-gs1-blue transition-colors cursor-pointer">
-                @for (device of availableDevices; track device.deviceId; let i = $index) {
-                  <option [value]="device.deviceId" [selected]="device.deviceId === currentDevice?.deviceId">
-                    {{ device.label || 'Obiettivo Fotocamera ' + (i + 1) }}
-                  </option>
+        @if (currentStep === 'scanning') {
+          <div class="space-y-4 animate-fade-in">
+            <div class="text-center space-y-1">
+              <h3 class="text-base font-black text-gs1-blue uppercase tracking-tight">Fotocamera attiva</h3>
+              <div class="flex flex-wrap justify-center gap-1 max-w-xs mx-auto">
+                <span class="text-[9px] font-bold text-gs1-mediumdark bg-gs1-lightgray px-2 py-0.5 rounded">Filtri dieta attivi:</span>
+                @if (selectedAllergens.length === 0) {
+                  <span class="text-[9px] font-extrabold text-gs1-forest uppercase">Nessuno (Tutto sicuro)</span>
+                } @else {
+                  @for (selected of selectedAllergens; track selected) {
+                    <span class="text-[9px] font-extrabold text-gs1-peach bg-gs1-peach/10 px-1.5 py-0.5 rounded border border-gs1-peach/20 uppercase">{{ selected }}</span>
+                  }
                 }
-              </select>
-            </div>
-          }
-          
-          <button (click)="resetDemo()" class="w-full text-center text-xs font-bold text-gs1-mediumdark hover:text-gs1-blue transition-colors pt-2">
-            ← Torna indietro e cambia profilo
-          </button>
-        </div>
-      }
-  
-      @if (currentStep === 'result') {
-        <div class="space-y-6 py-2">
-          
-          @if (allergyAlertTriggered) {
-            <div class="text-center space-y-4 p-4 bg-red-50 rounded-2xl border-2 border-red-200">
-              <div class="w-14 h-14 bg-red-600 text-white rounded-full flex items-center justify-center mx-auto text-xl shadow-md">🚨</div>
-              <div>
-                <h3 class="text-lg font-black text-red-600 uppercase tracking-tight">Prodotto non sicuro per te</h3>
-                <p class="text-xs text-gs1-darkgray font-semibold mt-1 leading-relaxed">
-                  Il sistema di sicurezza ha rilevato un rischio per la tua salute in base alle preferenze del tuo profilo.
-                </p>
-              </div>
-              <div class="bg-red-600 text-white p-4 rounded-xl text-xs font-bold text-left leading-relaxed">
-                ⚠️ ATTENZIONE: Questo prodotto è stato realizzato in uno stabilimento che utilizza <strong class="underline font-black">{{ allergenToWatch }}</strong>. Ne è sconsigliato il consumo per evitare potenziali reazioni allergiche.
               </div>
             </div>
-          }
   
-          <div class="pt-2">
-            <button (click)="resetDemo()" class="w-full bg-gs1-lightgray hover:bg-gs1-lightgray/80 text-gs1-darkgray font-bold text-xs uppercase tracking-wider py-3 px-6 rounded-xl transition-all border border-gs1-lightgray shadow-sm">
-              🔄 Aggiorna profilo e scansiona di nuovo
-            </button>
+            <div class="relative rounded-[2rem] overflow-hidden bg-black aspect-square border-2 border-gs1-blue/30 shadow-2xl">
+              <zxing-scanner 
+                [device]="currentDevice"
+                (camerasFound)="onCamerasFound($event)"
+                (scanSuccess)="onCodeResult($event)">
+              </zxing-scanner>
+              
+              <div class="absolute inset-0 border-[2.5rem] border-black/40 flex items-center justify-center pointer-events-none">
+                <div class="w-full h-full border-2 border-dashed border-gs1-orange relative">
+                  <div class="absolute inset-x-0 top-1/2 h-0.5 bg-gs1-orange/80 shadow-[0_0_8px_#F26A36] animate-scan-line"></div>
+                </div>
+              </div>
+            </div>
+  
+            @if (availableDevices.length > 0) {
+              <div class="space-y-1 pt-2">
+                <label for="cameraSelect" class="block text-[10px] font-black uppercase tracking-wider text-gs1-mediumdark">
+                  📷 Cambia obiettivo fotocamera:
+                </label>
+                <select 
+                  id="cameraSelect" 
+                  (change)="onDeviceSelectChange($event)" 
+                  class="w-full bg-gs1-lightgray/50 border border-gs1-lightgray rounded-xl p-2.5 text-xs font-bold text-gs1-darkgray focus:outline-none focus:border-gs1-blue transition-colors cursor-pointer">
+                  @for (device of availableDevices; track device.deviceId; let i = $index) {
+                    <option [value]="device.deviceId" [selected]="device.deviceId === currentDevice?.deviceId">
+                      {{ device.label || 'Obiettivo Fotocamera ' + (i + 1) }}
+                    </option>
+                  }
+                </select>
+              </div>
+            }
           </div>
-        </div>
-      }
+        }
+  
+        @if (currentStep === 'result') {
+          <div class="space-y-6 py-4 animate-fade-in">
+            @if (allergyAlertTriggered) {
+              <div class="text-center space-y-4 p-5 bg-red-50 rounded-[2rem] border-2 border-red-200 shadow-sm">
+                <div class="w-16 h-16 bg-red-600 text-white rounded-full flex items-center justify-center mx-auto text-2xl shadow-md">🚨</div>
+                <div>
+                  <h3 class="text-lg font-black text-red-600 uppercase tracking-tight">Prodotto non sicuro per te</h3>
+                  <p class="text-xs text-gs1-darkgray font-semibold mt-1 leading-relaxed">
+                    Il diario alimentare ha rilevato una corrispondenza pericolosa tra il tuo profilo di salute e gli ingredienti di questo stabilimento.
+                  </p>
+                </div>
+                <div class="bg-red-600 text-white p-4 rounded-2xl text-xs font-bold text-left space-y-2 shadow-inner">
+                  <p class="leading-relaxed">
+                    ⚠️ **ATTENZIONE:** Questo prodotto presenta un rischio di contaminazione crociata per:
+                  </p>
+                  <div class="flex flex-wrap gap-1.5 pt-1">
+                    @for (triggered of triggeredAllergens; track triggered) {
+                      <span class="bg-black/30 px-2 py-0.5 rounded border border-white/20 text-[10px] font-black uppercase tracking-wide">
+                        {{ triggered }}
+                      </span>
+                    }
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+  
+      </div>
+  
+      <footer class="p-6 bg-white border-t border-gs1-lightgray/40 shrink-0">
+        @if (currentStep === 'profile') {
+          <button (click)="saveDietProfile()" class="w-full bg-gs1-forest hover:bg-gs1-forest/90 text-white font-black text-xs uppercase tracking-wider py-4 px-6 rounded-2xl shadow-lg transition-all active:scale-95">
+            SALVA E PROCEDI
+          </button>
+        }
+        @if (currentStep !== 'profile') {
+          <button (click)="resetDemo()" class="w-full bg-gs1-lightgray hover:bg-gs1-lightgray/80 text-gs1-darkgray font-bold text-xs uppercase tracking-wider py-3.5 px-6 rounded-2xl transition-all border border-gs1-lightgray shadow-sm">
+            🔄 Modifica profilo o Scansiona ancora
+          </button>
+        }
+      </footer>
   
     </div>
   </div>
