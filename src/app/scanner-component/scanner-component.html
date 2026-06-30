@@ -39,7 +39,9 @@
 
           <div class="relative rounded-2xl overflow-hidden bg-black aspect-square border-2 border-gs1-blue/30 shadow-inner">
             <zxing-scanner 
-                [videoConstraints]="videoConstraints"
+              [device]="currentDevice"
+              [videoConstraints]="videoConstraints"
+              (camerasFound)="onCamerasFound($event)"
               (scanSuccess)="onCodeResult($event)">
             </zxing-scanner>
             

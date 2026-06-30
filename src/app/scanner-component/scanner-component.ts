@@ -18,12 +18,14 @@ export class ScannerComponent implements OnInit {
   allergyAlertTriggered = false;
   allergenToWatch = 'Frutta a guscio';
 
-  // VINCOLI VIDEO PER FORZARE LA FOTOCAMERA POSTERIORE 1X 📷
+  // Gestione dinamica della lente corretta 1x
+  availableDevices: MediaDeviceInfo[] = [];
+  currentDevice: MediaDeviceInfo | undefined = undefined;
+
+  // Riduciamo i vincoli generici per lasciare che la libreria usi il device ID specifico che sceglieremo
   videoConstraints: MediaTrackConstraints = {
-    facingMode: { ideal: 'environment' }, // Forza l'uso della fotocamera sul retro
     width: { ideal: 1280 },
-    height: { ideal: 720 },
-    aspectRatio: { ideal: 1.0 } // Forza un'area di scansione quadrata ottimale
+    height: { ideal: 720 }
   };
 
   constructor(private router: Router) {}
@@ -33,6 +35,39 @@ export class ScannerComponent implements OnInit {
   setAllergyProfile(isAllergic: boolean) {
     this.isAllergicUser = isAllergic;
     this.currentStep = 'scanning';
+  }
+
+  // FUNZIONE CHIAVE: Viene chiamata automaticamente quando la libreria rileva le fotocamere dell'iPhone
+  onCamerasFound(devices: MediaDeviceInfo[]) {
+    this.availableDevices = devices;
+    
+    // Log di debug visibile in console per mappare i nomi delle lenti su iOS
+    console.log('Fotocamere rilevate su questo dispositivo:', devices);
+
+    if (devices.length > 0) {
+      // Cerchiamo la lente posteriore principale (1x)
+      // Su iOS la camera principale si chiama spesso "Fotocamera posteriore" o contiene "Back Camera"
+      // Evitiamo le lenti Ultra-Wide (grandangolo) o Telephoto (3x/5x) se il sistema le isola
+      const backCameras = devices.filter(device => 
+        device.label.toLowerCase().includes('back') || 
+        device.label.toLowerCase().includes('posteriore')
+      );
+
+      if (backCameras.length > 0) {
+        // Di solito, la prima della lista delle posteriori è la principale 1x.
+        // Se ci sono lenti specifiche "tele" o "zoom" nelle posizioni successive, le scartiamo.
+        const primaryLens = backCameras.find(cam => 
+          !cam.label.toLowerCase().includes('tele') && 
+          !cam.label.toLowerCase().includes('zoom') &&
+          !cam.label.toLowerCase().includes('ultra')
+        );
+
+        this.currentDevice = primaryLens || backCameras[0];
+      } else {
+        // Fallback se i nomi delle etichette sono vuoti (es. per motivi di privacy prima del permesso)
+        this.currentDevice = devices[0];
+      }
+    }
   }
 
   onCodeResult(resultString: string) {
@@ -71,5 +106,6 @@ export class ScannerComponent implements OnInit {
     this.isAllergicUser = null;
     this.scannedUrl = '';
     this.allergyAlertTriggered = false;
+    this.currentDevice = undefined;
   }
 }
