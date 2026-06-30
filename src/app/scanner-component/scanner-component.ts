@@ -22,16 +22,18 @@ export class ScannerComponent implements OnInit {
 
   // L'elenco completo degli allergeni di legge configurabile nella dieta
   allergensGrid = [
-    { name: 'Latte', icon: '🥛' },
     { name: 'Glutine', icon: '🌾' },
-    { name: 'Frutta a guscio', icon: '🌰' },
-    { name: 'Arachidi', icon: '🥜' },
-    { name: 'Pesce', icon: '🐟' },
     { name: 'Crostacei', icon: '🦀' },
     { name: 'Uova', icon: '🥚' },
+    { name: 'Pesce', icon: '🐟' },
+    { name: 'Arachidi', icon: '🥜' },
     { name: 'Soia', icon: '🫛' },
-    { name: 'Sesamo', icon: '🫘' },
+    { name: 'Latte', icon: '🥛' },
+    { name: 'Frutta a guscio', icon: '🌰' },
+    { name: 'Sedano', icon: '🥬' },
     { name: 'Senape', icon: '🏺' },
+    { name: 'Sesamo', icon: '🫘' },
+    { name: 'Solfiti', icon: '🍷' },
     { name: 'Lupini', icon: '🟡' },
     { name: 'Molluschi', icon: '🐚' }
   ];

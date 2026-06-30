@@ -22,7 +22,7 @@
               <p class="text-xs text-gs1-mediumdark font-semibold">Seleziona gli allergeni comuni per personalizzare la tua dieta.</p>
             </div>
   
-            <div class="grid grid-cols-3 gap-3">
+            <div class="grid grid-cols-2 gap-3">
               @for (all of allergensGrid; track all.name) {
                 <button 
                   (click)="toggleAllergen(all.name)"
